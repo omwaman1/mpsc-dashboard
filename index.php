@@ -1,3 +1,160 @@
+<?php
+session_start();
+define('DASHBOARD_PASSWORD', 'omwman');
+
+if (isset($_GET['action']) && $_GET['action'] === 'logout') {
+    unset($_SESSION['dashboard_auth']);
+    session_destroy();
+    header('Location: index.php');
+    exit;
+}
+
+$authError = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['dashboard_password'])) {
+    if ($_POST['dashboard_password'] === DASHBOARD_PASSWORD) {
+        $_SESSION['dashboard_auth'] = true;
+        header('Location: index.php');
+        exit;
+    } else {
+        $authError = 'पासवर्ड चुकीचा आहे! (Invalid Password)';
+    }
+}
+
+$isAuthenticated = !empty($_SESSION['dashboard_auth']) && $_SESSION['dashboard_auth'] === true;
+
+if (!$isAuthenticated):
+?>
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPSC Abhyas Admin Dashboard | Lock Screen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #090d16;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .login-card {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 20px;
+            padding: 32px 28px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            text-align: center;
+        }
+        .lock-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px auto;
+            font-size: 26px;
+            color: white;
+            box-shadow: 0 10px 25px rgba(37,99,235,0.4);
+        }
+        .title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: white;
+        }
+        .subtitle {
+            font-size: 12.5px;
+            color: #94a3b8;
+            margin-bottom: 24px;
+        }
+        .input-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+        .input-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+        .input-box {
+            width: 100%;
+            background: #1e293b;
+            border: 1.5px solid #334155;
+            border-radius: 10px;
+            padding: 12px 14px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+        .input-box:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+        }
+        .btn-unlock {
+            width: 100%;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+        }
+        .error-msg {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 12px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="lock-icon"><i class="fa-solid fa-lock"></i></div>
+        <h1 class="title">Dashboard Protected</h1>
+        <p class="subtitle">एमपीएससी अभ्यास - Admin Access Lock</p>
+
+        <?php if (!empty($authError)): ?>
+            <div class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> <?php echo htmlspecialchars($authError); ?></div>
+        <?php endif; ?>
+
+        <form method="POST" action="index.php">
+            <div class="input-group">
+                <label class="input-label">Secret Password (गुप्त पासवर्ड)</label>
+                <input type="password" name="dashboard_password" class="input-box" placeholder="Enter password..." required autofocus>
+            </div>
+            <button type="submit" class="btn-unlock"><i class="fa-solid fa-key"></i> Unlock Dashboard</button>
+        </form>
+    </div>
+</body>
+</html>
+<?php
+exit;
+endif;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,24 +170,24 @@
     
     <style>
         :root {
-            --bg-dark: #090d16;
-            --bg-card: rgba(18, 25, 41, 0.75);
-            --bg-card-hover: rgba(28, 38, 61, 0.85);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --border-highlight: rgba(99, 102, 241, 0.4);
+            --bg-dark: #0f172a;        /* Dark Slate 900 */
+            --bg-canvas: #090d16;      /* Solid Neutral Canvas */
+            --bg-card: #1e293b;        /* Slate 800 */
+            --bg-card-hover: #334155;  /* Slate 700 */
+            --border-color: #334155;    /* Crisp Solid Border */
+            --border-highlight: #3b82f6;
             
-            --primary: #6366f1;
-            --primary-glow: rgba(99, 102, 241, 0.35);
-            --accent-cyan: #06b6d4;
+            --primary: #2563eb;
+            --accent-cyan: #0284c7;
             --accent-emerald: #10b981;
             --accent-amber: #f59e0b;
-            --accent-rose: #f43f5e;
+            --accent-rose: #ef4444;
             
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --text-dim: #6b7280;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
             
-            --sidebar-width: 380px;
+            --sidebar-width: 320px;
         }
 
         * {
@@ -40,191 +197,181 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-canvas);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.06) 0%, transparent 40%);
+            font-size: 13px;
         }
 
         /* Custom Scrollbars */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.2);
+            background: #0f172a;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 4px;
+            background: #334155;
+            border-radius: 3px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
+            background: #475569;
         }
 
-        /* HEADER */
+        /* COMPACT CMS HEADER */
         header {
-            height: 70px;
-            background: rgba(13, 19, 33, 0.85);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border-color);
+            min-height: 56px;
+            background: #0f172a;
+            border-bottom: 1px solid #1e293b;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 24px;
+            padding: 8px 16px;
             position: sticky;
             top: 0;
             z-index: 100;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-family: 'Outfit', sans-serif;
+            gap: 10px;
         }
 
         .brand-logo {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
-            border-radius: 12px;
+            width: 34px;
+            height: 34px;
+            background: #2563eb;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 20px;
-            box-shadow: 0 0 15px var(--primary-glow);
+            font-size: 16px;
         }
 
         .brand-title {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 700;
-            letter-spacing: -0.5px;
-            background: linear-gradient(to right, #ffffff, #cbd5e1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #f8fafc;
+            letter-spacing: -0.3px;
         }
 
         .brand-badge {
             font-size: 11px;
             font-weight: 600;
             background: rgba(16, 185, 129, 0.15);
-            color: var(--accent-emerald);
-            padding: 3px 8px;
-            border-radius: 20px;
+            color: #10b981;
+            padding: 2px 8px;
+            border-radius: 4px;
             border: 1px solid rgba(16, 185, 129, 0.3);
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
 
         .pulse-dot {
-            width: 7px;
-            height: 7px;
-            background-color: var(--accent-emerald);
+            width: 6px;
+            height: 6px;
+            background-color: #10b981;
             border-radius: 50%;
-            box-shadow: 0 0 8px var(--accent-emerald);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(1.3); }
-            100% { opacity: 1; transform: scale(1); }
         }
 
         .header-right {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .stats-summary {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .stat-item {
             display: flex;
             align-items: center;
             gap: 6px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 6px 12px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            font-size: 12.5px;
+            background: #1e293b;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            font-size: 12px;
+            color: #94a3b8;
         }
 
         .stat-item i {
-            color: var(--primary);
+            color: #38bdf8;
         }
 
         .stat-val {
             font-weight: 700;
-            color: white;
-            font-family: 'Outfit', sans-serif;
+            color: #f8fafc;
         }
 
         .btn-action {
-            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            background: #2563eb;
             color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 10px;
-            font-size: 12.5px;
+            border: 1px solid #3b82f6;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 6px;
-            box-shadow: 0 4px 12px var(--primary-glow);
-            transition: all 0.2s ease;
+            transition: background 0.15s ease;
         }
 
         .btn-action:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5);
+            background: #1d4ed8;
         }
 
         .btn-jobs {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+            background: #d97706;
+            border-color: #f59e0b;
         }
+        .btn-jobs:hover { background: #b45309; }
 
         .btn-bulk {
-            background: linear-gradient(135deg, #10b981, #059669);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            background: #059669;
+            border-color: #10b981;
         }
+        .btn-bulk:hover { background: #047857; }
 
-        /* MAIN APP LAYOUT */
+        /* MAIN LAYOUT */
         .app-container {
             display: flex;
             flex: 1;
-            height: calc(100vh - 70px);
+            min-height: calc(100vh - 56px);
         }
 
-        /* SIDEBAR (380px) */
+        /* SIDEBAR (Compact CMS Tree) */
         .sidebar {
-            width: var(--sidebar-width);
-            background: rgba(13, 19, 33, 0.7);
-            backdrop-filter: blur(12px);
-            border-right: 1px solid var(--border-color);
+            width: 320px;
+            min-width: 320px;
+            flex-shrink: 0;
+            background: #0f172a;
+            border-right: 1px solid #1e293b;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
         .sidebar-header {
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 10px 12px;
+            border-bottom: 1px solid #1e293b;
         }
 
         .search-box {
@@ -234,83 +381,80 @@
 
         .search-box i {
             position: absolute;
-            left: 12px;
+            left: 10px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-dim);
-            font-size: 13px;
+            color: #64748b;
+            font-size: 12px;
         }
 
         .search-input {
             width: 100%;
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 9px 12px 9px 36px;
-            color: white;
-            font-size: 13px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 7px 10px 7px 32px;
+            color: #f8fafc;
+            font-size: 12.5px;
             outline: none;
-            transition: all 0.2s ease;
         }
 
         .search-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 10px var(--primary-glow);
+            border-color: #3b82f6;
         }
 
         .subject-tree-container {
             flex: 1;
             overflow-y: auto;
-            padding: 12px;
+            padding: 8px;
         }
 
         /* TREE ITEM STYLES */
         .tree-subject-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            margin-bottom: 10px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            margin-bottom: 6px;
             overflow: hidden;
-            transition: all 0.2s ease;
         }
 
         .tree-subject-header {
-            padding: 12px 14px;
+            padding: 8px 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
             user-select: none;
-            transition: background 0.2s ease;
+            transition: background 0.15s ease;
         }
 
         .tree-subject-header:hover {
-            background: rgba(99, 102, 241, 0.08);
+            background: #334155;
         }
 
         .tree-subject-header.active {
-            background: rgba(99, 102, 241, 0.15);
-            border-left: 3px solid var(--primary);
+            background: #334155;
+            border-left: 3px solid #38bdf8;
         }
 
         .subject-info {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             flex: 1;
             min-width: 0;
         }
 
         .sub-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            background: #0f172a;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            color: var(--accent-cyan);
+            font-size: 12px;
+            color: #38bdf8;
             flex-shrink: 0;
         }
 
@@ -322,16 +466,16 @@
 
         .sub-title-e {
             font-weight: 600;
-            font-size: 13.5px;
-            color: white;
+            font-size: 12.5px;
+            color: #f8fafc;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .sub-title-m {
-            font-size: 11.5px;
-            color: var(--text-muted);
+            font-size: 11px;
+            color: #94a3b8;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -344,39 +488,38 @@
         }
 
         .badge-count {
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 700;
-            padding: 2px 7px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.06);
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
+            padding: 1px 6px;
+            border-radius: 4px;
+            background: #0f172a;
+            color: #94a3b8;
+            border: 1px solid #334155;
         }
 
         .btn-sub-sync {
             background: rgba(6, 182, 212, 0.15);
-            color: var(--accent-cyan);
+            color: #38bdf8;
             border: 1px solid rgba(6, 182, 212, 0.3);
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10.5px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 4px;
-            transition: all 0.2s ease;
+            gap: 3px;
         }
 
         .btn-sub-sync:hover {
-            background: var(--accent-cyan);
+            background: #0284c7;
             color: white;
         }
 
         .toggle-arrow {
-            font-size: 11px;
-            color: var(--text-dim);
-            transition: transform 0.2s ease;
+            font-size: 10px;
+            color: #64748b;
+            transition: transform 0.15s ease;
         }
 
         .toggle-arrow.open {
@@ -386,10 +529,10 @@
         /* RECURSIVE TREE NODES */
         .tree-children {
             display: none;
-            padding-left: 14px;
-            border-left: 1px dashed rgba(255, 255, 255, 0.1);
-            margin-left: 20px;
-            margin-bottom: 8px;
+            padding-left: 10px;
+            border-left: 1px solid #334155;
+            margin-left: 16px;
+            margin-bottom: 6px;
         }
 
         .tree-children.open {
@@ -397,26 +540,25 @@
         }
 
         .tree-topic-item {
-            padding: 7px 10px;
+            padding: 5px 8px;
             margin: 2px 0;
-            border-radius: 8px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
-            font-size: 12.5px;
-            color: var(--text-muted);
-            transition: all 0.15s ease;
+            font-size: 12px;
+            color: #cbd5e1;
         }
 
         .tree-topic-item:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: #334155;
             color: white;
         }
 
         .tree-topic-item.active {
-            background: rgba(99, 102, 241, 0.2);
-            color: var(--primary);
+            background: #2563eb;
+            color: white;
             font-weight: 600;
         }
 
@@ -426,77 +568,74 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            padding: 24px;
-            gap: 20px;
+            padding: 16px;
+            gap: 14px;
+            background: #020617;
         }
 
         /* TOPICS HORIZONTAL STRIP */
         .topics-section {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px 20px;
-            backdrop-filter: blur(12px);
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 10px 14px;
         }
 
         .section-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .section-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .topics-scroll {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 6px;
-        }
-
-        .topic-chip {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12.5px;
-            color: var(--text-muted);
-            white-space: nowrap;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            color: #f8fafc;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
+        .topics-scroll {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .topic-chip {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #cbd5e1;
+            white-space: nowrap;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
         .topic-chip:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: #334155;
             color: white;
-            border-color: var(--border-highlight);
         }
 
         .topic-chip.active {
-            background: var(--primary);
+            background: #2563eb;
             color: white;
-            border-color: var(--primary);
-            box-shadow: 0 0 12px var(--primary-glow);
+            border-color: #2563eb;
+            font-weight: 600;
         }
 
-        /* SEARCH BAR */
+        /* CONTROLS BAR */
         .controls-bar {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
 
         .question-search-box {
@@ -506,166 +645,161 @@
 
         .question-search-box i {
             position: absolute;
-            left: 14px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-dim);
+            color: #64748b;
         }
 
         .question-search-input {
             width: 100%;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px 16px 12px 42px;
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 9px 12px 9px 36px;
             color: white;
-            font-size: 14px;
+            font-size: 13px;
             outline: none;
-            transition: all 0.2s ease;
-            backdrop-filter: blur(10px);
         }
 
         .question-search-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 15px var(--primary-glow);
+            border-color: #3b82f6;
         }
 
-        /* QUESTION CARDS */
+        /* CMS QUESTION CARDS */
         .questions-list {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
         }
 
         .question-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px 24px;
-            backdrop-filter: blur(12px);
-            transition: all 0.25s ease;
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 14px 18px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
+            transition: border-color 0.15s ease;
         }
 
         .question-card:hover {
-            border-color: var(--border-highlight);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            border-color: #3b82f6;
         }
 
         .q-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 8px;
         }
 
         .q-meta {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .q-id-badge {
-            font-family: 'Outfit', sans-serif;
+            font-family: monospace;
             font-weight: 700;
-            font-size: 13px;
-            color: var(--primary);
-            background: rgba(99, 102, 241, 0.12);
-            padding: 4px 10px;
-            border-radius: 8px;
-            border: 1px solid rgba(99, 102, 241, 0.25);
+            font-size: 12px;
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(56, 189, 248, 0.25);
         }
 
         .lang-badge-btn {
             font-size: 11px;
             font-weight: 600;
-            background: rgba(6, 182, 212, 0.15);
-            color: var(--accent-cyan);
-            padding: 3px 10px;
-            border-radius: 12px;
-            border: 1px solid rgba(6, 182, 212, 0.3);
+            background: #1e293b;
+            color: #38bdf8;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid #334155;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 4px;
-            transition: all 0.2s ease;
         }
 
         .lang-badge-btn:hover {
-            background: var(--accent-cyan);
+            background: #2563eb;
             color: white;
         }
 
         .q-tag {
             font-size: 11px;
             font-weight: 600;
-            background: rgba(245, 158, 11, 0.12);
-            color: var(--accent-amber);
-            padding: 3px 10px;
-            border-radius: 12px;
-            border: 1px solid rgba(245, 158, 11, 0.25);
+            background: #1e293b;
+            color: #f59e0b;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid #334155;
         }
 
         .q-text {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 500;
-            line-height: 1.6;
+            line-height: 1.55;
             color: #f8fafc;
         }
 
         .options-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            gap: 8px;
         }
 
         .option-item {
-            background: rgba(255, 255, 255, 0.025);
-            border: 1px solid var(--border-color);
-            padding: 10px 14px;
-            border-radius: 10px;
-            font-size: 13.5px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12.5px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: var(--text-muted);
+            gap: 8px;
+            color: #cbd5e1;
         }
 
         .option-item.correct {
-            background: rgba(16, 185, 129, 0.1);
-            border-color: rgba(16, 185, 129, 0.35);
+            background: rgba(16, 185, 129, 0.12);
+            border-color: #10b981;
             color: #34d399;
             font-weight: 600;
         }
 
         .opt-num {
-            width: 22px;
-            height: 22px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.08);
+            background: #334155;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
             flex-shrink: 0;
+            color: #f8fafc;
         }
 
         .option-item.correct .opt-num {
-            background: var(--accent-emerald);
+            background: #10b981;
             color: white;
         }
 
         .solution-box {
-            background: rgba(6, 182, 212, 0.06);
-            border-left: 3px solid var(--accent-cyan);
-            padding: 12px 16px;
-            border-radius: 0 10px 10px 0;
-            font-size: 13px;
+            background: rgba(6, 182, 212, 0.08);
+            border-left: 3px solid #0284c7;
+            padding: 10px 14px;
+            border-radius: 0 6px 6px 0;
+            font-size: 12.5px;
             color: #cbd5e1;
             line-height: 1.5;
         }
@@ -675,38 +809,36 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 20px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            backdrop-filter: blur(12px);
+            padding: 12px 16px;
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
         }
 
         .page-info {
-            font-size: 13px;
-            color: var(--text-muted);
+            font-size: 12.5px;
+            color: #94a3b8;
         }
 
         .page-buttons {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .btn-page {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
+            background: #1e293b;
+            border: 1px solid #334155;
             color: white;
-            padding: 8px 14px;
-            border-radius: 10px;
-            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
 
         .btn-page:hover:not(:disabled) {
-            background: var(--primary);
-            border-color: var(--primary);
+            background: #2563eb;
+            border-color: #2563eb;
         }
 
         .btn-page:disabled {
@@ -715,23 +847,23 @@
         }
 
         .btn-page.active {
-            background: var(--primary);
-            border-color: var(--primary);
+            background: #2563eb;
+            border-color: #2563eb;
             font-weight: 700;
         }
 
         /* LOADING SPINNER */
         .loading-state {
             text-align: center;
-            padding: 40px;
-            color: var(--text-muted);
-            font-size: 14px;
+            padding: 30px;
+            color: #94a3b8;
+            font-size: 13px;
         }
 
         .loading-spinner {
-            font-size: 28px;
-            color: var(--primary);
-            margin-bottom: 12px;
+            font-size: 24px;
+            color: #38bdf8;
+            margin-bottom: 8px;
             animation: spin 1s linear infinite;
         }
 
@@ -745,189 +877,212 @@
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(8px);
-            z-index: 200;
+            background: rgba(3, 7, 18, 0.85);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
             align-items: center;
             justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
         }
 
         .modal-overlay.show {
             display: flex;
-            animation: fadeIn 0.2s ease;
         }
 
         .modal-card {
-            background: #111827;
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
             width: 100%;
-            max-width: 850px;
-            padding: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            max-width: 860px;
+            max-height: 90vh;
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            max-height: 90vh;
-            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            box-sizing: border-box;
         }
 
         .modal-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 14px;
+            background: #0f172a;
+            border-bottom: 1px solid #1e293b;
+            padding: 16px 20px;
+            flex-shrink: 0;
         }
 
         .modal-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
-            color: white;
+            color: #f8fafc;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .modal-close {
-            background: rgba(255, 255, 255, 0.1);
+            background: none;
             border: none;
-            color: var(--text-muted);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+            color: #94a3b8;
+            font-size: 22px;
             cursor: pointer;
+            line-height: 1;
+            padding: 4px;
+        }
+        .modal-close:hover { color: white; }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+            box-sizing: border-box;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
+            flex-direction: column;
+            gap: 14px;
         }
 
-        .modal-close:hover {
-            background: var(--accent-rose);
-            color: white;
+        .modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #090d16;
+            border-top: 1px solid #1e293b;
+            padding: 14px 20px;
+            flex-shrink: 0;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 6px;
+            min-width: 0;
         }
 
         .form-label {
-            font-size: 12.5px;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        .form-control {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 10px 14px;
-            color: white;
-            font-size: 13.5px;
-            outline: none;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-        }
-
-        /* RECRUITMENT JOB STYLES */
-        .recruitment-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .rec-title-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 12px;
-        }
-
-        .rec-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: white;
-            line-height: 1.4;
-        }
-
-        .badge-vacancies {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            font-weight: 700;
             font-size: 12px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            white-space: nowrap;
-        }
-
-        .rec-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12.5px;
-            margin-top: 8px;
-        }
-
-        .rec-table th, .rec-table td {
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 8px 12px;
-            text-align: left;
-        }
-
-        .rec-table th {
-            background: rgba(99, 102, 241, 0.15);
-            color: var(--accent-cyan);
             font-weight: 600;
-        }
-
-        .rec-table tr:nth-child(even) {
-            background: rgba(255, 255, 255, 0.015);
-        }
-
-        .link-buttons {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn-rec-link {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            text-decoration: none;
+            color: #cbd5e1;
             display: flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.2s ease;
         }
 
-        .btn-rec-link:hover {
-            background: var(--primary);
-            border-color: var(--primary);
+        .form-control {
+            width: 100%;
+            box-sizing: border-box;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 9px 12px;
+            color: #f8fafc;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.15s ease;
         }
 
-        .btn-apply {
-            background: linear-gradient(135deg, #10b981, #059669);
-            border: none;
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        textarea.form-control {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        /* WORDPRESS STYLE LEFT NAVIGATION BAR */
+        .wp-nav-bar {
+            width: 220px;
+            min-width: 220px;
+            background: #090d16;
+            border-right: 1px solid #1e293b;
+            display: flex;
+            flex-direction: column;
+            padding: 10px 0;
+            flex-shrink: 0;
+            user-select: none;
+            overflow-y: auto;
+        }
+
+        .wp-nav-title {
+            padding: 10px 14px 4px 14px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #64748b;
+        }
+
+        .wp-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 14px;
+            color: #94a3b8;
+            font-size: 12.5px;
+            font-weight: 500;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: all 0.15s ease;
+            text-decoration: none;
+        }
+
+        .wp-nav-item:hover {
+            background: #1e293b;
+            color: #f8fafc;
+        }
+
+        .wp-nav-item.active {
+            background: #1e293b;
+            color: #38bdf8;
+            border-left-color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .wp-nav-item i {
+            width: 16px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .wp-table-container {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .wp-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+            text-align: left;
+        }
+
+        .wp-table th {
+            background: #1e293b;
+            color: #38bdf8;
+            font-weight: 600;
+            padding: 10px 14px;
+            border-bottom: 1px solid #334155;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .wp-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #1e293b;
+            color: #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .wp-table tr:hover td {
+            background: #1e293b;
         }
     </style>
 </head>
@@ -978,90 +1133,452 @@
             <button class="btn-action" onclick="openAddQuestionModal()">
                 <i class="fa-solid fa-plus"></i> Add Question
             </button>
+            <button class="btn-action" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3);" onclick="window.location.href='index.php?action=logout'">
+                <i class="fa-solid fa-right-from-bracket"></i> Lock Dashboard
+            </button>
         </div>
     </header>
 
     <!-- CONTAINER -->
-    <div class="app-container">
+    <div class="app-container" style="display: flex;">
         
-        <!-- SIDEBAR WITH RECURSIVE MULTI-LEVEL HIERARCHY TREE -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="subject-search" class="search-input" placeholder="Search subjects & topics...">
+        <!-- WORDPRESS LEFT SIDEBAR NAVIGATION -->
+        <div class="wp-nav-bar">
+            <div class="wp-nav-title">Navigation Menu</div>
+            <div class="wp-nav-item active" id="nav-item-explorer" onclick="switchWpTab('explorer')">
+                <i class="fa-solid fa-folder-tree" style="color: var(--primary);"></i>
+                <span>Question Bank</span>
+            </div>
+            <div class="wp-nav-item" id="nav-item-test-series" onclick="switchWpTab('test-series')">
+                <i class="fa-solid fa-list-check" style="color: var(--accent-emerald);"></i>
+                <span>Test Series</span>
+            </div>
+            <div class="wp-nav-item" id="nav-item-exams" onclick="switchWpTab('exams')">
+                <i class="fa-solid fa-graduation-cap" style="color: var(--accent-cyan);"></i>
+                <span>Manage Exams</span>
+            </div>
+            <div class="wp-nav-item" id="nav-item-contacts" onclick="switchWpTab('contacts')">
+                <i class="fa-solid fa-address-book" style="color: #ec4899;"></i>
+                <span>User Contacts (1,702+)</span>
+            </div>
+            <div class="wp-nav-item" id="nav-item-users" onclick="switchWpTab('users')">
+                <i class="fa-solid fa-users-gear" style="color: #8b5cf6;"></i>
+                <span>App Users</span>
+            </div>
+            <div class="wp-nav-item" id="nav-item-notifications" onclick="switchWpTab('notifications')">
+                <i class="fa-solid fa-bell" style="color: #f59e0b;"></i>
+                <span>Push Notifications</span>
+            </div>
+            <div class="wp-nav-item" id="nav-item-jobs" onclick="openRecruitmentsModal()">
+                <i class="fa-solid fa-briefcase" style="color: var(--accent-amber);"></i>
+                <span>Job Recruitments</span>
+            </div>
+
+            <div class="wp-nav-title" style="margin-top: 16px;">Quick Actions</div>
+            <div class="wp-nav-item" onclick="openCreateTestSeriesModal()">
+                <i class="fa-solid fa-square-plus" style="color: var(--accent-emerald);"></i>
+                <span>+ New Test Series</span>
+            </div>
+            <div class="wp-nav-item" onclick="openBulkModal()">
+                <i class="fa-solid fa-file-import" style="color: var(--accent-cyan);"></i>
+                <span>Bulk Import Qs</span>
+            </div>
+            <div class="wp-nav-item" onclick="openAddQuestionModal()">
+                <i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i>
+                <span>Add Question</span>
+            </div>
+            <a class="wp-nav-item" href="db_diagnostic.php" target="_blank">
+                <i class="fa-solid fa-database" style="color: var(--accent-rose);"></i>
+                <span>DB Diagnostic</span>
+            </a>
+        </div>
+
+        <!-- VIEW 1: QUESTION BANK EXPLORER -->
+        <div id="wp-view-explorer" style="display: flex; flex: 1; overflow: hidden;">
+            <!-- SIDEBAR WITH RECURSIVE MULTI-LEVEL HIERARCHY TREE -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="subject-search" class="search-input" placeholder="Search subjects & topics...">
+                    </div>
+                </div>
+
+                <div class="subject-tree-container" id="subject-list-container">
+                    <div class="loading-state">
+                        <i class="fa-solid fa-circle-notch loading-spinner"></i>
+                        <p>Loading Hierarchy Tree...</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="subject-tree-container" id="subject-list-container">
-                <div class="loading-state">
-                    <i class="fa-solid fa-circle-notch loading-spinner"></i>
-                    <p>Loading Hierarchy Tree...</p>
+            <!-- MAIN CONTENT -->
+            <div class="main-content">
+
+                <!-- UNIFIED MODERN EXPLORER TOOLBAR CARD -->
+                <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 16px; margin-bottom: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                    
+                    <!-- HEADER ROW: SUBJECT TITLE & SCOPE BADGE -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 36px; height: 36px; background: rgba(37, 99, 235, 0.15); border: 1px solid rgba(37, 99, 235, 0.3); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #3b82f6; font-size: 16px;">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
+                            <div>
+                                <h3 id="current-subject-title" style="font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700; color: #f8fafc; margin: 0; line-height: 1.2;">All Subjects</h3>
+                                <span id="topic-count-label" style="font-size: 11.5px; color: #94a3b8;">-- Topics</span>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <div id="search-scope-badge">
+                                <span style="background: rgba(255,255,255,0.08); color: var(--text-muted); padding: 4px 10px; border-radius: 6px; font-size: 12px;">
+                                    <i class="fa-solid fa-globe"></i> Scope: Global (All Subjects)
+                                </span>
+                            </div>
+                            <span style="font-size: 11px; color: #64748b;"><i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> Auto-search as you type</span>
+                        </div>
+                    </div>
+
+                    <!-- TOPIC CHIPS SCROLL BAR -->
+                    <div class="topics-scroll" id="topics-scroll-container" style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px;">
+                        <div class="topic-chip active" onclick="selectTopic(0)">
+                            <span>All Topics</span>
+                        </div>
+                    </div>
+
+                    <!-- INTEGRATED SEARCH BAR & BUTTON -->
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="question-search-box" style="flex: 1; position: relative; width: 100%;">
+                            <i class="fa-solid fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 13px;"></i>
+                            <input type="text" id="question-search" class="question-search-input" placeholder="Search Marathi or English words, options, or Question ID..." onkeydown="handleSearchKeyDown(event)" style="width: 100%; background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 10px 38px 10px 38px; color: #f8fafc; font-size: 13px; outline: none;">
+                            <button id="btn-clear-search" onclick="clearQuestionSearch()" style="display: none; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 16px;">&times;</button>
+                        </div>
+                        <button class="btn-action" onclick="triggerManualSearch()" style="background: #2563eb; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; border: none; white-space: nowrap;">
+                            <i class="fa-solid fa-magnifying-glass"></i> Search
+                        </button>
+                    </div>
+
                 </div>
+
+                <!-- QUESTIONS LIST -->
+                <div class="questions-list" id="questions-container">
+                    <div class="loading-state">
+                        <i class="fa-solid fa-circle-notch loading-spinner"></i>
+                        <p>Loading Questions...</p>
+                    </div>
+                </div>
+
+                <!-- PAGINATION -->
+                <div class="pagination-container">
+                    <div class="page-info" id="pagination-info">
+                        Showing 0 of 0 questions
+                    </div>
+                    <div class="page-buttons" id="pagination-buttons">
+                        <!-- Dynamic Buttons -->
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <!-- MAIN CONTENT -->
-        <div class="main-content">
-
-            <!-- TOPICS STRIP -->
-            <div class="topics-section">
-                <div class="section-header">
-                    <div class="section-title">
-                        <i class="fa-solid fa-layer-group" style="color: var(--accent-cyan);"></i>
-                        <span id="current-subject-title">All Subjects</span>
-                    </div>
-                    <span style="font-size: 12px; color: var(--text-dim);" id="topic-count-label">-- Topics</span>
+        <!-- VIEW 2: TEST SERIES MANAGER -->
+        <div id="wp-view-test-series" style="display: none; flex: 1; padding: 24px; overflow-y: auto;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <h2 style="font-family: 'Outfit', sans-serif; font-size: 22px; color: white; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-list-check" style="color: var(--accent-emerald);"></i> Test Series Manager
+                    </h2>
+                    <p style="font-size: 13px; color: var(--text-dim); margin-top: 4px;">Create, edit, publish and link question bank IDs for mobile app test series</p>
                 </div>
-                <div class="topics-scroll" id="topics-scroll-container">
-                    <div class="topic-chip active" onclick="selectTopic(0)">
-                        <span>All Topics</span>
-                    </div>
-                </div>
+                <button class="btn-action" onclick="openCreateTestSeriesModal()" style="background: linear-gradient(135deg, #10b981, #059669); font-weight: 600; padding: 10px 18px; border-radius: 10px;">
+                    <i class="fa-solid fa-plus"></i> Create New Test Series
+                </button>
             </div>
 
-            <!-- CONTROLS & SEARCH -->
-            <div class="controls-bar" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
-                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-                    <div id="search-scope-badge">
-                        <span style="background: rgba(255,255,255,0.08); color: var(--text-muted); padding: 4px 10px; border-radius: 6px; font-size: 12px;">
-                            <i class="fa-solid fa-globe"></i> Scope: Global (All Subjects)
-                        </span>
-                    </div>
-                    <span style="font-size: 11.5px; color: var(--text-dim);"><i class="fa-solid fa-bolt" style="color: var(--accent-amber);"></i> Search as you type OR press Enter / click Search</span>
+            <div class="wp-table-container">
+                <table class="wp-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Test Series Name</th>
+                            <th>Price</th>
+                            <th>Attempts Limit</th>
+                            <th>Question Count</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="test-series-table-body">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VIEW 3: MANAGE EXAMS -->
+        <div id="wp-view-exams" style="display: none; flex: 1; padding: 24px; overflow-y: auto;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <h2 style="font-family: 'Outfit', sans-serif; font-size: 22px; color: white; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-graduation-cap" style="color: var(--accent-cyan);"></i> Exam Categories Manager
+                    </h2>
+                    <p style="font-size: 13px; color: var(--text-dim); margin-top: 4px;">Add, edit, or delete exam categories for question papers and test series</p>
                 </div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div class="question-search-box" style="flex: 1; position: relative;">
-                        <i class="fa-solid fa-search"></i>
-                        <input type="text" id="question-search" class="question-search-input" placeholder="Search Marathi or English words, options, or Question ID..." onkeydown="handleSearchKeyDown(event)">
-                        <button id="btn-clear-search" onclick="clearQuestionSearch()" style="display: none; position: absolute; right: 12px; background: transparent; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px;">&times;</button>
-                    </div>
-                    <button class="btn-action" onclick="triggerManualSearch()" style="background: var(--primary); padding: 10px 18px; border-radius: 8px; font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-magnifying-glass"></i> Search
+                <button class="btn-action" onclick="openCreateExamModal()" style="background: linear-gradient(135deg, #0284c7, #0369a1); font-weight: 600; padding: 10px 18px; border-radius: 10px;">
+                    <i class="fa-solid fa-plus"></i> Add New Exam Category
+                </button>
+            </div>
+
+            <div class="wp-table-container">
+                <table class="wp-table">
+                    <thead>
+                        <tr>
+                            <th>Exam ID</th>
+                            <th>Exam Category Name</th>
+                            <th>Exam Code</th>
+                            <th>Question Count</th>
+                            <th>App Visibility Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exams-table-body">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VIEW 4: USER CONTACTS MANAGER -->
+        <div id="wp-view-contacts" style="display: none; flex: 1; padding: 24px; overflow-y: auto;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <h2 style="font-family: 'Outfit', sans-serif; font-size: 22px; color: white; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-address-book" style="color: #ec4899;"></i> User Contacts Manager
+                    </h2>
+                    <p style="font-size: 13px; color: var(--text-dim); margin-top: 4px;">View, search, filter, and export all 1,702+ user synced contacts</p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-action" onclick="exportContactsCSV()" style="background: linear-gradient(135deg, #10b981, #059669); font-weight: 600; padding: 10px 18px; border-radius: 10px;">
+                        <i class="fa-solid fa-file-csv"></i> Export Contacts CSV
                     </button>
                 </div>
             </div>
 
-            <!-- QUESTIONS LIST -->
-            <div class="questions-list" id="questions-container">
-                <div class="loading-state">
-                    <i class="fa-solid fa-circle-notch loading-spinner"></i>
-                    <p>Loading Questions...</p>
+            <!-- SEARCH & FILTER BAR -->
+            <div style="display: flex; gap: 12px; margin-bottom: 16px; align-items: center; background: #1e293b; padding: 14px; border-radius: 12px; border: 1px solid #334155;">
+                <div style="flex: 1; position: relative;">
+                    <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 12px; color: #64748b;"></i>
+                    <input type="text" id="contacts-search-input" placeholder="Search contact name, phone (+91...), or user email..." onkeyup="handleContactsSearchKey(event)" style="width: 100%; padding: 10px 14px 10px 40px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px;">
                 </div>
+                <button class="btn-action" onclick="loadDashboardContacts(1)" style="background: #2563eb; padding: 10px 20px; border-radius: 8px;">
+                    Search
+                </button>
             </div>
 
-            <!-- PAGINATION -->
-            <div class="pagination-container">
-                <div class="page-info" id="pagination-info">
-                    Showing 0 of 0 questions
-                </div>
-                <div class="page-buttons" id="pagination-buttons">
-                    <!-- Dynamic Buttons -->
-                </div>
+            <!-- CONTACTS TABLE -->
+            <div class="wp-table-container">
+                <table class="wp-table">
+                    <thead>
+                        <tr>
+                            <th># ID</th>
+                            <th>Contact Name</th>
+                            <th>Contact Phone Number</th>
+                            <th>Synced By User Email</th>
+                            <th>Sync Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contacts-table-body">
+                        <!-- Dynamic Contact Rows -->
+                    </tbody>
+                </table>
             </div>
 
+            <!-- PAGINATION BAR -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; color: var(--text-dim); font-size: 13px;" id="contacts-pagination-bar">
+                <!-- Pagination Info -->
+            </div>
         </div>
 
+        <!-- VIEW 5: APP USERS & PRO PASS MANAGER -->
+        <div id="wp-view-users" style="display: none; flex: 1; padding: 24px; overflow-y: auto;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <h2 style="font-family: 'Outfit', sans-serif; font-size: 22px; color: white; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-users-gear" style="color: #8b5cf6;"></i> App Registered Users & Pass Access
+                    </h2>
+                    <p style="font-size: 13px; color: var(--text-dim); margin-top: 4px;">View registered students, phone numbers, and manage subscription access</p>
+                </div>
+            </div>
+
+            <div class="wp-table-container">
+                <table class="wp-table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Full Name</th>
+                            <th>Email Address</th>
+                            <th>Phone Number</th>
+                            <th>Registration Date</th>
+                            <th>Subscription Expiry</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                        <!-- Dynamic User Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VIEW 6: PUSH NOTIFICATIONS MANAGER -->
+        <div id="wp-view-notifications" style="display: none; flex: 1; padding: 24px; overflow-y: auto;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <h2 style="font-family: 'Outfit', sans-serif; font-size: 22px; color: white; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-bell" style="color: #f59e0b;"></i> Push Notifications Broadcast
+                    </h2>
+                    <p style="font-size: 13px; color: var(--text-dim); margin-top: 4px;">Send and broadcast push announcements to all MPSC ABHYAS students</p>
+                </div>
+            </div>
+
+            <!-- SEND NOTIFICATION FORM -->
+            <div style="background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 24px; max-width: 650px;">
+                <h3 style="color: white; font-size: 15px; margin-bottom: 14px;"><i class="fa-solid fa-paper-plane" style="color: #f59e0b;"></i> Publish New Notification</h3>
+                <div style="margin-bottom: 12px;">
+                    <label style="display: block; color: #94a3b8; font-size: 12px; margin-bottom: 4px;">Title (शीर्षक)</label>
+                    <input type="text" id="notif-title" placeholder="e.g. 📢 नवीन राज्यसेवा सराव चाचणी जोडली आहे!" style="width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px;">
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <label style="display: block; color: #94a3b8; font-size: 12px; margin-bottom: 4px;">Message (माहिती / संदेश)</label>
+                    <textarea id="notif-message" rows="3" placeholder="उदा. आजच ५० नवीन प्रश्न सोडवा आणि आपली ऑल महाराष्ट्र रँक तपासा..." style="width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px;"></textarea>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; color: #94a3b8; font-size: 12px; margin-bottom: 4px;">Alert Type</label>
+                    <select id="notif-type" style="width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px;">
+                        <option value="alert">🔔 Alert / Update</option>
+                        <option value="exam">🏛️ Exam Notification</option>
+                        <option value="test">📝 Test Series</option>
+                    </select>
+                </div>
+                <button class="btn-action" onclick="sendDashboardNotification()" style="background: linear-gradient(135deg, #f59e0b, #d97706); font-weight: 600; padding: 10px 24px; border-radius: 8px;">
+                    Broadcast Notification
+                </button>
+            </div>
+
+            <!-- RECENT NOTIFICATIONS TABLE -->
+            <div class="wp-table-container">
+                <table class="wp-table">
+                    <thead>
+                        <tr>
+                            <th># ID</th>
+                            <th>Title</th>
+                            <th>Message</th>
+                            <th>Type</th>
+                            <th>Published Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="notifications-table-body">
+                        <!-- Dynamic Notification Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CREATE / EDIT TEST SERIES MODAL -->
+    <div class="modal-overlay" id="testSeriesModal">
+        <div class="modal-card" style="max-width: 650px;">
+            <div class="modal-header">
+                <div class="modal-title" id="ts-modal-title"><i class="fa-solid fa-pen-to-square" style="color: var(--primary);"></i> Create New Test Series</div>
+                <button class="modal-close" onclick="closeTestSeriesModal()">&times;</button>
+            </div>
+            <form id="testSeriesForm" onsubmit="submitTestSeriesForm(event)">
+                <input type="hidden" id="ts-id" value="0">
+                <div class="form-group">
+                    <label class="form-label">Test Series Name / Title *</label>
+                    <input type="text" class="form-control" id="ts-title" placeholder="e.g. MPSC Rajyaseva Prelims 2026 Full Test Series" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-graduation-cap" style="color: var(--accent-cyan);"></i> Target Exam Category *</label>
+                        <select class="form-control" id="ts-exam-name">
+                            <option value="">-- Loading Exam Categories... --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Price (₹)</label>
+                        <input type="number" step="0.01" class="form-control" id="ts-price" placeholder="499" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Max Attempts Allowed</label>
+                    <input type="number" class="form-control" id="ts-max-attempts" placeholder="10" value="10">
+                </div>
+                <div class="form-group" style="background: #1e293b; padding: 10px; border-radius: 6px; border: 1px solid #334155;">
+                    <label class="form-label" style="color: #38bdf8;"><i class="fa-solid fa-wand-magic-sparkles"></i> Quick Question Auto-Linker</label>
+                    <div style="display: flex; gap: 8px;">
+                        <select class="form-control" id="ts-helper-subject" style="flex: 1;">
+                            <option value="0">-- Select Subject to Append Questions --</option>
+                            <option value="2">History (इतिहास)</option>
+                            <option value="3">Polity (भारतीय राज्यघटना)</option>
+                            <option value="4">Geography (भूगोल)</option>
+                            <option value="5">Economics (अर्थव्यवस्था)</option>
+                            <option value="6">General Science (सामान्य विज्ञान)</option>
+                            <option value="12">Computers & IT (संगणक व माहिती तंत्रज्ञान)</option>
+                            <option value="13">Laws & Acts (कायदे)</option>
+                            <option value="14">Current Affairs (चालू घडामोडी)</option>
+                        </select>
+                        <button type="button" class="btn-action" onclick="autoLinkSubjectQuestions()" style="background: #0284c7; white-space: nowrap;">
+                            <i class="fa-solid fa-link"></i> Append QIDs
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Question Bank IDs (Comma-separated)</label>
+                    <textarea class="form-control" id="ts-question-ids" rows="4" placeholder="e.g. 1, 2, 3, 4, 5, 12, 15, 20..."></textarea>
+                    <small style="color: var(--text-dim); font-size: 11px;">Enter question IDs separated by commas, or use the quick auto-linker above.</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Publishing Status</label>
+                    <select class="form-control" id="ts-published">
+                        <option value="1">Published (Visible in Mobile App)</option>
+                        <option value="0">Draft / Unpublished</option>
+                    </select>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+                    <button type="button" class="btn-action" onclick="closeTestSeriesModal()" style="background: rgba(255,255,255,0.1);">Cancel</button>
+                    <button type="submit" class="btn-action" style="background: var(--primary); font-weight: 600;">Save Test Series</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CREATE / EDIT EXAM MODAL -->
+    <div class="modal-overlay" id="examModal">
+        <div class="modal-card" style="max-width: 500px;">
+            <div class="modal-header">
+                <div class="modal-title" id="exam-modal-title"><i class="fa-solid fa-graduation-cap" style="color: var(--accent-cyan);"></i> Add New Exam Category</div>
+                <button class="modal-close" onclick="closeExamModal()">&times;</button>
+            </div>
+            <form id="examForm" onsubmit="submitExamForm(event)">
+                <input type="hidden" id="exam-id" value="0">
+                <div class="form-group">
+                    <label class="form-label">Exam Category Name *</label>
+                    <input type="text" class="form-control" id="exam-name-input" placeholder="e.g. Van Seva Prelims (वनसेवा पूर्व)" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Exam Short Code</label>
+                    <input type="text" class="form-control" id="exam-code-input" placeholder="e.g. VAN_SEVA">
+                    <small style="color: var(--text-dim); font-size: 11px;">Short code identifier used internally.</small>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn-action" onclick="closeExamModal()" style="flex: 1; background: #334155;">Cancel</button>
+                    <button type="submit" class="btn-action" style="flex: 1; background: var(--primary);">Save Exam Category</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- RECRUITMENTS / JOB NOTIFICATIONS MODAL -->
@@ -1137,191 +1654,291 @@
                 <div class="modal-title"><i class="fa-solid fa-circle-plus" style="color: var(--primary);"></i> Add Question (Marathi & English)</div>
                 <button class="modal-close" onclick="closeAddQuestionModal()">&times;</button>
             </div>
-            <form id="addQuestionForm" onsubmit="submitNewQuestion(event)">
-                <div class="form-group">
-                    <label class="form-label">Subject</label>
-                    <select class="form-control" id="modal-subject-id">
-                        <option value="2">History (इतिहास)</option>
-                        <option value="3">Polity (भारतीय राज्यघटना)</option>
-                        <option value="4">Geography (भूगोल)</option>
-                        <option value="5">Economics (अर्थव्यवस्था)</option>
-                        <option value="6">General Science (सामान्य विज्ञान)</option>
-                        <option value="12">Computers & IT (संगणक व माहिती तंत्रज्ञान)</option>
-                        <option value="13">Laws & Acts (कायदे)</option>
-                        <option value="14">Current Affairs (चालू घडामोडी)</option>
-                    </select>
+            <form id="addQuestionForm" onsubmit="submitNewQuestion(event)" style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-book" style="color: var(--primary);"></i> Subject</label>
+                            <select class="form-control" id="modal-subject-id" name="subjectID" onchange="onAddModalSubjectChange()">
+                                <!-- Dynamically populated -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-folder-tree" style="color: var(--accent-cyan);"></i> Topic / Subtopic</label>
+                            <select class="form-control" id="modal-topic-id" name="topicID">
+                                <option value="0">-- General Subject Question (No Topic) --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-link" style="color:var(--primary);"></i> Assign Test Series</label>
+                            <select class="form-control" id="modal-test-series" name="test_series_id">
+                                <option value="0">-- General Database Question --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-graduation-cap" style="color: var(--accent-cyan);"></i> Exam Category</label>
+                            <select class="form-control" id="modal-exam-category" name="examName">
+                                <option value="Rajyaseva Prelims (राज्यसेवा पूर्व)">Rajyaseva Prelims (राज्यसेवा पूर्व)</option>
+                                <option value="ASO (सहायक कक्ष अधिकारी)">ASO (सहायक कक्ष अधिकारी)</option>
+                                <option value="Rajyaseva Mains (राज्यसेवा मुख्य)">Rajyaseva Mains (राज्यसेवा मुख्य)</option>
+                                <option value="Combine Group B Prelims (गट ब पूर्व)">Combine Group B Prelims (गट ब पूर्व)</option>
+                                <option value="Combine Group B Mains (गट ब मुख्य)">Combine Group B Mains (गट ब मुख्य)</option>
+                                <option value="Combine Group C Prelims (गट क पूर्व)">Combine Group C Prelims (गट क पूर्व)</option>
+                                <option value="Combine Group C Mains (गट क मुख्य)">Combine Group C Mains (गट क मुख्य)</option>
+                                <option value="STI (राज्य कर निरीक्षक)">STI (राज्य कर निरीक्षक)</option>
+                                <option value="PSI (पोलीस उपनिरीक्षक)">PSI (पोलीस उपनिरीक्षक)</option>
+                                <option value="Clerk Typist (क्लार्क टायपिस्ट)">Clerk Typist (क्लार्क टायपिस्ट)</option>
+                                <option value="Excise Sub Inspector (राज्य उत्पादन शुल्क)">Excise Sub Inspector (राज्य उत्पादन शुल्क)</option>
+                                <option value="Tax Assistant (कर सहायक)">Tax Assistant (कर सहायक)</option>
+                                <option value="MPSC Subordinate Services">MPSC Subordinate Services</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-calendar-days" style="color: var(--accent-amber);"></i> Exam Year</label>
+                            <select class="form-control" id="modal-exam-year" name="examYear">
+                                <option value="2026">2026</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="2021">2021</option>
+                                <option value="2020">2020</option>
+                                <option value="2019">2019</option>
+                                <option value="2018">2018</option>
+                                <option value="2017">2017</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label class="form-label">Question Text (Marathi)</label>
+                            <textarea class="form-control" id="modal-qtext" name="questionName" rows="3" placeholder="मराठी प्रश्न..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Question Text (English Translation)</label>
+                            <textarea class="form-control" id="modal-qtext-e" name="questionNameE" rows="3" placeholder="English Question Text..."></textarea>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div class="form-group">
+                            <label class="form-label">Option 1 (Marathi)</label>
+                            <input type="text" class="form-control" id="modal-opt1" name="queOption1" placeholder="पर्याय १..." required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Option 1 (English)</label>
+                            <input type="text" class="form-control" id="modal-opt1-e" name="queOption1E" placeholder="Option 1 English...">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Option 2 (Marathi)</label>
+                            <input type="text" class="form-control" id="modal-opt2" name="queOption2" placeholder="पर्याय २..." required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Option 2 (English)</label>
+                            <input type="text" class="form-control" id="modal-opt2-e" name="queOption2E" placeholder="Option 2 English...">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Option 3 (Marathi)</label>
+                            <input type="text" class="form-control" id="modal-opt3" name="queOption3" placeholder="पर्याय ३..." required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Option 3 (English)</label>
+                            <input type="text" class="form-control" id="modal-opt3-e" name="queOption3E" placeholder="Option 3 English...">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Option 4 (Marathi)</label>
+                            <input type="text" class="form-control" id="modal-opt4" name="queOption4" placeholder="पर्याय ४..." required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Option 4 (English)</label>
+                            <input type="text" class="form-control" id="modal-opt4-e" name="queOption4E" placeholder="Option 4 English...">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label class="form-label">Correct Answer</label>
+                            <select class="form-control" id="modal-correct-ans" name="correctAnswer">
+                                <option value="1">Option 1 (पर्याय १)</option>
+                                <option value="2">Option 2 (पर्याय २)</option>
+                                <option value="3">Option 3 (पर्याय ३)</option>
+                                <option value="4">Option 4 (पर्याय ४)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label class="form-label">Solution / Explanation (Marathi)</label>
+                            <textarea class="form-control" id="modal-sol" name="solutionText" rows="2" placeholder="स्पष्टीकरण..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Solution / Explanation (English)</label>
+                            <textarea class="form-control" id="modal-sol-e" name="solutionTextE" rows="2" placeholder="English Explanation..."></textarea>
+                        </div>
+                    </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div class="form-group">
-                        <label class="form-label">Question Text (Marathi)</label>
-                        <textarea class="form-control" id="modal-qtext" rows="3" placeholder="मराठी प्रश्न..." required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Question Text (English Translation)</label>
-                        <textarea class="form-control" id="modal-qtext-e" rows="3" placeholder="English Question Text..."></textarea>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-action" onclick="closeAddQuestionModal()" style="background: rgba(255,255,255,0.08);">Cancel</button>
+                    <button type="submit" class="btn-action" style="background: #2563eb;">
+                        <i class="fa-solid fa-plus"></i> Save Question
+                    </button>
                 </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div class="form-group">
-                        <label class="form-label">Option 1 (Marathi)</label>
-                        <input type="text" class="form-control" id="modal-opt1" placeholder="पर्याय १..." required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Option 1 (English)</label>
-                        <input type="text" class="form-control" id="modal-opt1-e" placeholder="Option 1 English...">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Option 2 (Marathi)</label>
-                        <input type="text" class="form-control" id="modal-opt2" placeholder="पर्याय २..." required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Option 2 (English)</label>
-                        <input type="text" class="form-control" id="modal-opt2-e" placeholder="Option 2 English...">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Option 3 (Marathi)</label>
-                        <input type="text" class="form-control" id="modal-opt3" placeholder="पर्याय ३..." required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Option 3 (English)</label>
-                        <input type="text" class="form-control" id="modal-opt3-e" placeholder="Option 3 English...">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Option 4 (Marathi)</label>
-                        <input type="text" class="form-control" id="modal-opt4" placeholder="पर्याय ४..." required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Option 4 (English)</label>
-                        <input type="text" class="form-control" id="modal-opt4-e" placeholder="Option 4 English...">
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div class="form-group">
-                        <label class="form-label">Correct Answer</label>
-                        <select class="form-control" id="modal-correct-ans">
-                            <option value="1">Option 1 (पर्याय १)</option>
-                            <option value="2">Option 2 (पर्याय २)</option>
-                            <option value="3">Option 3 (पर्याय ३)</option>
-                            <option value="4">Option 4 (पर्याय ४)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Exam Name / Type</label>
-                        <input type="text" class="form-control" id="modal-exam-name" value="MPSC" placeholder="e.g. MPSC Group C">
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div class="form-group">
-                        <label class="form-label">Solution / Explanation (Marathi)</label>
-                        <textarea class="form-control" id="modal-sol" rows="2" placeholder="स्पष्टीकरण..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Solution / Explanation (English)</label>
-                        <textarea class="form-control" id="modal-sol-e" rows="2" placeholder="English Explanation..."></textarea>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 8px;">
-                    <i class="fa-solid fa-save"></i> Save Question to Database
-                </button>
             </form>
         </div>
     </div>
 
     <!-- EDIT QUESTION MODAL -->
     <div class="modal-overlay" id="editQuestionModal">
-        <div class="modal-card" style="max-width: 880px; max-height: 92vh; overflow-y: auto;">
+        <div class="modal-card">
             <div class="modal-header">
                 <div class="modal-title"><i class="fa-solid fa-pen-to-square" style="color: var(--accent-amber);"></i> Edit Question & Explanations (Marathi & English)</div>
                 <button class="modal-close" onclick="closeEditQuestionModal()">&times;</button>
             </div>
-            <form id="editQuestionForm" onsubmit="saveQuestionEdit(event)">
+            <form id="editQuestionForm" onsubmit="saveQuestionEdit(event)" style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
                 <input type="hidden" id="edit-q-id">
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                    <div class="form-group">
-                        <label class="form-label">Question Text (Marathi)</label>
-                        <textarea class="form-control" id="edit-q-name-m" rows="3" required></textarea>
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-book" style="color: var(--primary);"></i> Subject</label>
+                            <select class="form-control" id="edit-subject-id" name="subjectID" onchange="onEditModalSubjectChange()">
+                                <!-- Dynamically populated -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-folder-tree" style="color: var(--accent-cyan);"></i> Topic / Subtopic</label>
+                            <select class="form-control" id="edit-topic-id" name="topicID">
+                                <option value="0">-- General Subject Question (No Topic) --</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Question Text (English)</label>
-                        <textarea class="form-control" id="edit-q-name-e" rows="3"></textarea>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">Question Text (Marathi)</label>
+                            <textarea class="form-control" id="edit-q-name-m" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Question Text (English)</label>
+                            <textarea class="form-control" id="edit-q-name-e" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label class="form-label">Option 1 (Marathi)</label>
+                            <input type="text" class="form-control" id="edit-opt1-m">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Option 1 (English)</label>
+                            <input type="text" class="form-control" id="edit-opt1-e">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Option 2 (Marathi)</label>
+                            <input type="text" class="form-control" id="edit-opt2-m">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Option 2 (English)</label>
+                            <input type="text" class="form-control" id="edit-opt2-e">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Option 3 (Marathi)</label>
+                            <input type="text" class="form-control" id="edit-opt3-m">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Option 3 (English)</label>
+                            <input type="text" class="form-control" id="edit-opt3-e">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Option 4 (Marathi)</label>
+                            <input type="text" class="form-control" id="edit-opt4-m">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Option 4 (English)</label>
+                            <input type="text" class="form-control" id="edit-opt4-e">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-link" style="color:var(--primary);"></i> Assign / Link to Test Series (Optional)</label>
+                            <select class="form-control" id="edit-test-series">
+                                <option value="0">-- Do Not Link to Additional Test Series --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Correct Option Answer</label>
+                            <select class="form-control" id="edit-correct-ans">
+                                <option value="1">Option 1</option>
+                                <option value="2">Option 2</option>
+                                <option value="3">Option 3</option>
+                                <option value="4">Option 4</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-graduation-cap" style="color: var(--accent-cyan);"></i> Exam Category</label>
+                            <select class="form-control" id="edit-exam-category">
+                                <option value="">-- Select Exam Category --</option>
+                                <option value="ASO (सहायक कक्ष अधिकारी)">ASO (सहायक कक्ष अधिकारी)</option>
+                                <option value="Rajyaseva Prelims (राज्यसेवा पूर्व)">Rajyaseva Prelims (राज्यसेवा पूर्व)</option>
+                                <option value="Rajyaseva Mains (राज्यसेवा मुख्य)">Rajyaseva Mains (राज्यसेवा मुख्य)</option>
+                                <option value="Combine Group B Prelims (गट ब पूर्व)">Combine Group B Prelims (गट ब पूर्व)</option>
+                                <option value="Combine Group B Mains (गट ब मुख्य)">Combine Group B Mains (गट ब मुख्य)</option>
+                                <option value="Combine Group C Prelims (गट क पूर्व)">Combine Group C Prelims (गट क पूर्व)</option>
+                                <option value="Combine Group C Mains (गट क मुख्य)">Combine Group C Mains (गट क मुख्य)</option>
+                                <option value="STI (राज्य कर निरीक्षक)">STI (राज्य कर निरीक्षक)</option>
+                                <option value="PSI (पोलीस उपनिरीक्षक)">PSI (पोलीस उपनिरीक्षक)</option>
+                                <option value="Clerk Typist (क्लार्क टायपिस्ट)">Clerk Typist (क्लार्क टायपिस्ट)</option>
+                                <option value="Excise Sub Inspector (राज्य उत्पादन शुल्क)">Excise Sub Inspector (राज्य उत्पादन शुल्क)</option>
+                                <option value="Tax Assistant (कर सहायक)">Tax Assistant (कर सहायक)</option>
+                                <option value="MPSC Subordinate Services">MPSC Subordinate Services</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-calendar-days" style="color: var(--accent-amber);"></i> Exam Year</label>
+                            <select class="form-control" id="edit-exam-year">
+                                <option value="2026">2026</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="2021">2021</option>
+                                <option value="2020">2020</option>
+                                <option value="2019">2019</option>
+                                <option value="2018">2018</option>
+                                <option value="2017">2017</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">Solution Explanation (Marathi)</label>
+                            <textarea class="form-control" id="edit-sol-m" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Solution Explanation (English)</label>
+                            <textarea class="form-control" id="edit-sol-e" rows="4"></textarea>
+                        </div>
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
-                    <div class="form-group">
-                        <label class="form-label">Option 1 (Marathi)</label>
-                        <input type="text" class="form-control" id="edit-opt1-m">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Option 1 (English)</label>
-                        <input type="text" class="form-control" id="edit-opt1-e">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Option 2 (Marathi)</label>
-                        <input type="text" class="form-control" id="edit-opt2-m">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Option 2 (English)</label>
-                        <input type="text" class="form-control" id="edit-opt2-e">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Option 3 (Marathi)</label>
-                        <input type="text" class="form-control" id="edit-opt3-m">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Option 3 (English)</label>
-                        <input type="text" class="form-control" id="edit-opt3-e">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Option 4 (Marathi)</label>
-                        <input type="text" class="form-control" id="edit-opt4-m">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Option 4 (English)</label>
-                        <input type="text" class="form-control" id="edit-opt4-e">
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;">
-                    <div class="form-group">
-                        <label class="form-label">Correct Option Answer</label>
-                        <select class="form-control" id="edit-correct-ans">
-                            <option value="1">Option 1</option>
-                            <option value="2">Option 2</option>
-                            <option value="3">Option 3</option>
-                            <option value="4">Option 4</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Exam Name (e.g. MPSC PRE 2025)</label>
-                        <input type="text" class="form-control" id="edit-exam-name">
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;">
-                    <div class="form-group">
-                        <label class="form-label">Solution Explanation (Marathi)</label>
-                        <textarea class="form-control" id="edit-sol-m" rows="4"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Solution Explanation (English)</label>
-                        <textarea class="form-control" id="edit-sol-e" rows="4"></textarea>
-                    </div>
-                </div>
-
-                <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 12px;">
+                <div class="modal-footer">
                     <button type="button" class="btn-action" onclick="closeEditQuestionModal()" style="background: rgba(255,255,255,0.08);">Cancel</button>
                     <button type="submit" class="btn-action" style="background: var(--primary);">Save Changes</button>
                 </div>
@@ -1416,7 +2033,7 @@
         // 2. SUBJECT & TOPIC TREE ENGINE
         async function fetchSubjectsAndBuildTree() {
             try {
-                const res = await fetch('api.php?action=subjects');
+                const res = await fetch('api.php?action=tree');
                 const json = await res.json();
                 if (json.status === 'success') {
                     globalSubjects = json.data;
@@ -1621,16 +2238,46 @@
             return cleaned;
         }
 
+        function setCorrectAnsSelectValue(rawVal) {
+            const sel = document.getElementById('edit-correct-ans');
+            if (!sel) return;
+            const str = (rawVal || '1').toString().trim().toLowerCase();
+            
+            let targetVal = '1';
+            if (['1', '2', '3', '4'].includes(str)) {
+                targetVal = str;
+            } else if (str.includes('1') || str.includes('a') || str.includes('option 1')) {
+                targetVal = '1';
+            } else if (str.includes('2') || str.includes('b') || str.includes('option 2')) {
+                targetVal = '2';
+            } else if (str.includes('3') || str.includes('c') || str.includes('option 3')) {
+                targetVal = '3';
+            } else if (str.includes('4') || str.includes('d') || str.includes('option 4')) {
+                targetVal = '4';
+            }
+            
+            sel.value = targetVal;
+        }
+
         // 5. EDIT QUESTION MODAL ENGINE
         async function openEditQuestionModal(qid) {
+            populateAllTestSeriesDropdowns();
+            populateModalSubjectDropdowns();
             try {
                 const res = await fetch(`api.php?action=get_question_by_id&question_id=${qid}`);
                 const json = await res.json();
                 if (json.status === 'success') {
                     const q = json.data;
-                    document.getElementById('edit-q-id').value = q.questionID;
+                    document.getElementById('edit-q-id').value = q.questionID || '';
+                    
+                    if (q.subjectID && document.getElementById('edit-subject-id')) {
+                        document.getElementById('edit-subject-id').value = q.subjectID;
+                        populateTopicOptionsForSubject(q.subjectID, 'edit-topic-id', q.topicID || 0);
+                    }
+
                     document.getElementById('edit-q-name-m').value = q.questionName || '';
                     document.getElementById('edit-q-name-e').value = q.questionNameE || '';
+                    
                     document.getElementById('edit-opt1-m').value = cleanOptionText(q.queOption1 || '');
                     document.getElementById('edit-opt1-e').value = cleanOptionText(q.queOption1E || '');
                     document.getElementById('edit-opt2-m').value = cleanOptionText(q.queOption2 || '');
@@ -1639,12 +2286,39 @@
                     document.getElementById('edit-opt3-e').value = cleanOptionText(q.queOption3E || '');
                     document.getElementById('edit-opt4-m').value = cleanOptionText(q.queOption4 || '');
                     document.getElementById('edit-opt4-e').value = cleanOptionText(q.queOption4E || '');
-                    document.getElementById('edit-correct-ans').value = (q.correctAnswer || '1').trim();
-                    document.getElementById('edit-exam-name').value = q.examName || '';
+                    
+                    setCorrectAnsSelectValue(q.correctAnswer || q.queAnswer || q.correct_answer || q.answer);
+
+                    const catSelect = document.getElementById('edit-exam-category');
+                    if (catSelect) {
+                        const targetCat = (q.examCategory || q.examName || '').trim();
+                        if (targetCat) {
+                            let found = false;
+                            for (let i = 0; i < catSelect.options.length; i++) {
+                                if (catSelect.options[i].value.toLowerCase().trim() === targetCat.toLowerCase()) {
+                                    catSelect.selectedIndex = i;
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                const opt = document.createElement('option');
+                                opt.value = targetCat;
+                                opt.innerText = targetCat;
+                                catSelect.appendChild(opt);
+                                catSelect.value = targetCat;
+                            }
+                        }
+                    }
+
+                    if (document.getElementById('edit-exam-year') && q.examYear) {
+                        document.getElementById('edit-exam-year').value = q.examYear;
+                    }
+
                     document.getElementById('edit-sol-m').value = q.solutionText || '';
                     document.getElementById('edit-sol-e').value = q.solutionTextE || '';
 
-                    document.getElementById('editQuestionModal').classList.add('active');
+                    document.getElementById('editQuestionModal').classList.add('show');
                 } else {
                     alert('Error: ' + json.message);
                 }
@@ -1654,13 +2328,15 @@
         }
 
         function closeEditQuestionModal() {
-            document.getElementById('editQuestionModal').classList.remove('active');
+            document.getElementById('editQuestionModal').classList.remove('show');
         }
 
         async function saveQuestionEdit(e) {
             e.preventDefault();
             const data = {
                 questionID: document.getElementById('edit-q-id').value,
+                subjectID: document.getElementById('edit-subject-id') ? document.getElementById('edit-subject-id').value : 0,
+                topicID: document.getElementById('edit-topic-id') ? document.getElementById('edit-topic-id').value : 0,
                 questionName: document.getElementById('edit-q-name-m').value,
                 questionNameE: document.getElementById('edit-q-name-e').value,
                 queOption1: document.getElementById('edit-opt1-m').value,
@@ -1672,9 +2348,12 @@
                 queOption4: document.getElementById('edit-opt4-m').value,
                 queOption4E: document.getElementById('edit-opt4-e').value,
                 correctAnswer: document.getElementById('edit-correct-ans').value,
-                examName: document.getElementById('edit-exam-name').value,
+                examName: document.getElementById('edit-exam-category') ? document.getElementById('edit-exam-category').value : '',
+                examCategory: document.getElementById('edit-exam-category') ? document.getElementById('edit-exam-category').value : '',
+                examYear: document.getElementById('edit-exam-year') ? document.getElementById('edit-exam-year').value : '',
                 solutionText: document.getElementById('edit-sol-m').value,
                 solutionTextE: document.getElementById('edit-sol-e').value,
+                test_series_id: document.getElementById('edit-test-series') ? document.getElementById('edit-test-series').value : 0
             };
 
             try {
@@ -1688,6 +2367,7 @@
                     alert('Question updated successfully!');
                     closeEditQuestionModal();
                     fetchQuestions();
+                    loadDashboardTestSeries();
                 } else {
                     alert('Failed to update: ' + json.message);
                 }
@@ -1748,14 +2428,18 @@
                 const json = await res.json();
 
                 if (json.status === 'success') {
-                    const data = json.data;
-                    totalPages = data.total_pages || 1;
-                    renderQuestions(data.questions);
-                    renderPagination(data.total_questions, data.current_page, data.total_pages);
+                    const questionsList = Array.isArray(json.data) ? json.data : (json.data.questions || []);
+                    const totalQs = json.total || (json.data ? json.data.total_questions : questionsList.length) || 0;
+                    const limit = json.limit || 10;
+                    const totalPg = Math.ceil(totalQs / limit) || 1;
+
+                    renderQuestions(questionsList);
+                    renderPagination(totalQs, currentPage, totalPg);
                 } else {
                     container.innerHTML = `<div class="loading-state" style="color:var(--accent-rose);">Error: ${json.message}</div>`;
                 }
             } catch (err) {
+                console.error("fetchQuestions error:", err);
                 container.innerHTML = `<div class="loading-state" style="color:var(--accent-rose);">Failed to load questions from database.</div>`;
             }
         }
@@ -1776,33 +2460,48 @@
             questions.forEach(q => {
                 const card = document.createElement('div');
                 card.className = 'question-card';
-                card.id = `qcard-${q.questionID}`;
 
-                const hasEnglish = q.questionNameE && q.questionNameE.trim() !== '';
-                const activeLang = cardLangState[q.questionID] || 'mr';
+                const qid = q.id || q.questionID;
+                card.id = `qcard-${qid}`;
 
-                const displayQ = (activeLang === 'en' && hasEnglish) ? q.questionNameE : q.questionName;
-                const opt1 = (activeLang === 'en' && q.queOption1E) ? q.queOption1E : q.queOption1;
-                const opt2 = (activeLang === 'en' && q.queOption2E) ? q.queOption2E : q.queOption2;
-                const opt3 = (activeLang === 'en' && q.queOption3E) ? q.queOption3E : q.queOption3;
-                const opt4 = (activeLang === 'en' && q.queOption4E) ? q.queOption4E : q.queOption4;
-                const sol  = (activeLang === 'en' && q.solutionTextE) ? q.solutionTextE : q.solutionText;
-                const ans  = (q.correctAnswer || '1').trim();
+                const qMr = q.question_mr || q.questionName || '';
+                const qEn = q.question_en || q.questionNameE || '';
+                const opt1Mr = q.opt1_mr || q.queOption1 || '';
+                const opt2Mr = q.opt2_mr || q.queOption2 || '';
+                const opt3Mr = q.opt3_mr || q.queOption3 || '';
+                const opt4Mr = q.opt4_mr || q.queOption4 || '';
+                const opt1En = q.opt1_en || q.queOption1E || '';
+                const opt2En = q.opt2_en || q.queOption2E || '';
+                const opt3En = q.opt3_en || q.queOption3E || '';
+                const opt4En = q.opt4_en || q.queOption4E || '';
+                const solMr = q.solution_mr || q.solutionText || '';
+                const solEn = q.solution_en || q.solutionTextE || '';
+                const ans = (q.correct_answer || q.correctAnswer || '1').toString().trim();
+
+                const hasEnglish = qEn && qEn.trim() !== '';
+                const activeLang = cardLangState[qid] || 'mr';
+
+                const displayQ = (activeLang === 'en' && hasEnglish) ? qEn : qMr;
+                const opt1 = (activeLang === 'en' && opt1En) ? opt1En : opt1Mr;
+                const opt2 = (activeLang === 'en' && opt2En) ? opt2En : opt2Mr;
+                const opt3 = (activeLang === 'en' && opt3En) ? opt3En : opt3Mr;
+                const opt4 = (activeLang === 'en' && opt4En) ? opt4En : opt4Mr;
+                const sol  = (activeLang === 'en' && solEn) ? solEn : solMr;
 
                 card.innerHTML = `
                     <div class="q-header">
                         <div class="q-meta">
-                            <span class="q-id-badge">Q #${q.questionID}</span>
+                            <span class="q-id-badge">Q #${qid}</span>
                             <span class="q-tag"><i class="fa-solid fa-book"></i> ${escapeHtml(q.subjectNameE || 'Subject')}</span>
                             ${q.topicNameE ? `<span class="q-tag" style="background:rgba(6,182,212,0.12); color:var(--accent-cyan); border-color:rgba(6,182,212,0.25);"><i class="fa-solid fa-tag"></i> ${escapeHtml(q.topicNameE)}</span>` : ''}
-                            <span class="q-tag" style="background:rgba(168,85,247,0.18); color:#c084fc; border:1px solid rgba(168,85,247,0.35); font-weight:700;"><i class="fa-solid fa-graduation-cap"></i> ${escapeHtml(q.examName && q.examName !== '1' ? q.examName : 'MPSC PRE')}</span>
+                            <span class="q-tag" style="background:rgba(168,85,247,0.18); color:#c084fc; border:1px solid rgba(168,85,247,0.35); font-weight:700;"><i class="fa-solid fa-graduation-cap"></i> ${escapeHtml(q.exam_name || q.examName || 'MPSC PRE')}</span>
                         </div>
                         <div style="display:flex; align-items:center; gap:8px;">
-                            <button class="btn-action" style="background: rgba(245, 158, 11, 0.18); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.35); font-weight: 600; padding: 4px 10px; font-size: 12px;" onclick="openEditQuestionModal(${q.questionID})">
+                            <button class="btn-action" style="background: rgba(245, 158, 11, 0.18); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.35); font-weight: 600; padding: 4px 10px; font-size: 12px;" onclick="openEditQuestionModal(${qid})">
                                 <i class="fa-solid fa-pen-to-square"></i> Edit Question
                             </button>
                             ${hasEnglish ? `
-                                <button class="lang-badge-btn" onclick="toggleCardLanguage(${q.questionID})">
+                                <button class="lang-badge-btn" onclick="toggleCardLanguage(${qid})">
                                     <i class="fa-solid fa-language"></i> ${activeLang === 'en' ? 'Switch to Marathi' : 'Switch to English'}
                                 </button>
                             ` : `<span style="font-size:11px; color:var(--text-dim);"><i class="fa-solid fa-check"></i> Marathi</span>`}
@@ -1832,7 +2531,8 @@
 
                     ${sol ? `
                         <div class="solution-box">
-                            <strong><i class="fa-solid fa-lightbulb" style="color:var(--accent-amber);"></i> Explanation:</strong> ${sol}
+                            <strong style="color:var(--accent-cyan); display:block; margin-bottom:4px;"><i class="fa-solid fa-lightbulb"></i> Solution / Explanation:</strong>
+                            ${sol}
                         </div>
                     ` : ''}
                 `;
@@ -2012,11 +2712,130 @@
             btnContainer.appendChild(nextBtn);
         }
 
+        function populateAllTestSeriesDropdowns() {
+            fetch('api.php?action=get_test_series')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        currentTestSeriesList = data.data;
+                        const modalTs = document.getElementById('modal-test-series');
+                        const editTs = document.getElementById('edit-test-series');
+
+                        let optionsHtml = '<option value="0">-- General Database Question (No Test Series) --</option>';
+                        data.data.forEach(ts => {
+                            optionsHtml += `<option value="${ts.id}">${escapeHtml(ts.title)} (${ts.question_count} Qs - ₹${ts.price})</option>`;
+                        });
+
+                        if (modalTs) modalTs.innerHTML = optionsHtml;
+                        if (editTs) editTs.innerHTML = '<option value="0">-- Do Not Link to Additional Test Series --</option>' + optionsHtml.replace('<option value="0">-- General Database Question (No Test Series) --</option>', '');
+                    }
+                }).catch(err => console.error("Dropdown error:", err));
+        }
+
+        function populateModalSubjectDropdowns() {
+            const addSub = document.getElementById('modal-subject-id');
+            const editSub = document.getElementById('edit-subject-id');
+
+            if (!globalSubjects || globalSubjects.length === 0) return;
+
+            let html = '';
+            globalSubjects.forEach(s => {
+                const titleE = s.subjectNameE || s.subjectNameM || 'Subject';
+                const titleM = s.subjectNameM ? ` (${s.subjectNameM})` : '';
+                html += `<option value="${s.subjectID}">${escapeHtml(titleE)}${escapeHtml(titleM)}</option>`;
+            });
+
+            if (addSub) addSub.innerHTML = html;
+            if (editSub) editSub.innerHTML = html;
+        }
+
+        function populateTopicOptionsForSubject(subjectID, targetSelectId, selectedTopicID = 0) {
+            const topicSelect = document.getElementById(targetSelectId);
+            if (!topicSelect) return;
+
+            const sub = globalSubjects.find(s => s.subjectID == subjectID);
+            if (!sub || !sub.topics_tree || sub.topics_tree.length === 0) {
+                topicSelect.innerHTML = '<option value="0">-- General Subject Question (No Topic) --</option>';
+                return;
+            }
+
+            let optionsHtml = '<option value="0">-- General Subject Question (No Topic) --</option>';
+
+            function recurseTopics(tree, level = 0) {
+                tree.forEach(t => {
+                    const indent = level > 0 ? '— '.repeat(level) : '';
+                    const name = (t.topicNameE || t.topicName || 'Topic').trim();
+                    const nameM = t.topicName && t.topicName !== name ? ` (${t.topicName.trim()})` : '';
+                    optionsHtml += `<option value="${t.topicID}">${indent}${escapeHtml(name)}${escapeHtml(nameM)}</option>`;
+                    if (t.children && t.children.length > 0) {
+                        recurseTopics(t.children, level + 1);
+                    }
+                });
+            }
+
+            recurseTopics(sub.topics_tree, 0);
+            topicSelect.innerHTML = optionsHtml;
+
+            if (selectedTopicID > 0) {
+                topicSelect.value = selectedTopicID;
+            } else {
+                topicSelect.value = 0;
+            }
+        }
+
+        function onAddModalSubjectChange() {
+            const subId = document.getElementById('modal-subject-id').value;
+            populateTopicOptionsForSubject(subId, 'modal-topic-id', 0);
+        }
+
+        function onEditModalSubjectChange() {
+            const subId = document.getElementById('edit-subject-id').value;
+            populateTopicOptionsForSubject(subId, 'edit-topic-id', 0);
+        }
+
         // MODAL CONTROLS
-        function openAddQuestionModal() { document.getElementById('addQuestionModal').classList.add('show'); }
+        function openAddQuestionModal() { 
+            populateAllTestSeriesDropdowns();
+            populateModalSubjectDropdowns();
+            const addSub = document.getElementById('modal-subject-id');
+            if (addSub && addSub.value > 0) {
+                populateTopicOptionsForSubject(addSub.value, 'modal-topic-id', 0);
+            }
+            document.getElementById('addQuestionModal').classList.add('show'); 
+        }
         function closeAddQuestionModal() { document.getElementById('addQuestionModal').classList.remove('show'); }
         function openBulkModal() { document.getElementById('bulkImportModal').classList.add('show'); }
         function closeBulkModal() { document.getElementById('bulkImportModal').classList.remove('show'); }
+
+        async function autoLinkSubjectQuestions() {
+            const subId = document.getElementById('ts-helper-subject').value;
+            if (subId <= 0) {
+                alert("Please select a subject first.");
+                return;
+            }
+            try {
+                const res = await fetch(`api.php?action=questions&subject_id=${subId}&limit=500`);
+                const json = await res.json();
+                if (json.status === 'success') {
+                    const questions = Array.isArray(json.data) ? json.data : (json.data.questions || []);
+                    const qids = questions.map(q => q.id || q.questionID).filter(Boolean);
+                    if (qids.length === 0) {
+                        alert("No questions found for this subject.");
+                        return;
+                    }
+                    const area = document.getElementById('ts-question-ids');
+                    const existing = area.value.trim();
+                    let combined = existing ? existing.split(',').map(s => s.trim()).filter(Boolean) : [];
+                    qids.forEach(id => {
+                        if (!combined.includes(String(id))) combined.push(String(id));
+                    });
+                    area.value = combined.join(', ');
+                    alert(`Successfully appended ${qids.length} Question IDs from selected subject!`);
+                }
+            } catch (err) {
+                alert("Error fetching subject questions: " + err.message);
+            }
+        }
 
         async function submitNewQuestion(e) {
             e.preventDefault();
@@ -2030,6 +2849,7 @@
                     closeAddQuestionModal();
                     fetchStats();
                     fetchQuestions();
+                    loadDashboardTestSeries();
                 } else {
                     alert("Error: " + json.message);
                 }
@@ -2071,6 +2891,552 @@
         function escapeJsQuotes(str) {
             if (!str) return '';
             return str.replace(/'/g, "\\'");
+        }
+
+        // --- WORDPRESS NAVIGATION & TEST SERIES MANAGER JS ---
+        let currentTestSeriesList = [];
+        let currentExamsList = [];
+
+        function switchWpTab(tabName) {
+            const itemExp = document.getElementById('nav-item-explorer');
+            const itemTs = document.getElementById('nav-item-test-series');
+            const itemExams = document.getElementById('nav-item-exams');
+            const itemContacts = document.getElementById('nav-item-contacts');
+            const itemUsers = document.getElementById('nav-item-users');
+            const itemNotifs = document.getElementById('nav-item-notifications');
+
+            if (itemExp) itemExp.classList.remove('active');
+            if (itemTs) itemTs.classList.remove('active');
+            if (itemExams) itemExams.classList.remove('active');
+            if (itemContacts) itemContacts.classList.remove('active');
+            if (itemUsers) itemUsers.classList.remove('active');
+            if (itemNotifs) itemNotifs.classList.remove('active');
+
+            const viewExp = document.getElementById('wp-view-explorer');
+            const viewTs = document.getElementById('wp-view-test-series');
+            const viewExams = document.getElementById('wp-view-exams');
+            const viewContacts = document.getElementById('wp-view-contacts');
+            const viewUsers = document.getElementById('wp-view-users');
+            const viewNotifs = document.getElementById('wp-view-notifications');
+
+            if (viewExp) viewExp.style.display = 'none';
+            if (viewTs) viewTs.style.display = 'none';
+            if (viewExams) viewExams.style.display = 'none';
+            if (viewContacts) viewContacts.style.display = 'none';
+            if (viewUsers) viewUsers.style.display = 'none';
+            if (viewNotifs) viewNotifs.style.display = 'none';
+
+            if (tabName === 'explorer') {
+                if (itemExp) itemExp.classList.add('active');
+                if (viewExp) viewExp.style.display = 'flex';
+            } else if (tabName === 'test-series') {
+                if (itemTs) itemTs.classList.add('active');
+                if (viewTs) viewTs.style.display = 'block';
+                loadDashboardTestSeries();
+            } else if (tabName === 'exams') {
+                if (itemExams) itemExams.classList.add('active');
+                if (viewExams) viewExams.style.display = 'block';
+                loadDashboardExams();
+            } else if (tabName === 'contacts') {
+                if (itemContacts) itemContacts.classList.add('active');
+                if (viewContacts) viewContacts.style.display = 'block';
+                loadDashboardContacts(1);
+            } else if (tabName === 'users') {
+                if (itemUsers) itemUsers.classList.add('active');
+                if (viewUsers) viewUsers.style.display = 'block';
+                loadDashboardUsers();
+            } else if (tabName === 'notifications') {
+                if (itemNotifs) itemNotifs.classList.add('active');
+                if (viewNotifs) viewNotifs.style.display = 'block';
+                loadDashboardNotifications();
+            }
+        }
+
+        // --- USER CONTACTS ENGINE ---
+        let currentContactsPage = 1;
+        let currentContactsSearch = '';
+
+        function loadDashboardContacts(page = 1) {
+            currentContactsPage = page;
+            const searchInput = document.getElementById('contacts-search-input');
+            const search = searchInput ? searchInput.value.trim() : '';
+            currentContactsSearch = search;
+
+            const tbody = document.getElementById('contacts-table-body');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> Loading contacts...</td></tr>';
+
+            fetch(`api.php?action=get_admin_contacts&page=${page}&limit=50&search=${encodeURIComponent(search)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success' && data.data) {
+                        renderContactsTable(data.data);
+                        renderContactsPagination(data.total, data.distinct_users, data.page, data.limit);
+                    } else {
+                        if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: #ef4444;">No contacts found</td></tr>';
+                    }
+                })
+                .catch(err => {
+                    if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: #ef4444;">Failed to load contacts: ' + err + '</td></tr>';
+                });
+        }
+
+        function renderContactsTable(contacts) {
+            const tbody = document.getElementById('contacts-table-body');
+            if (!tbody) return;
+            if (contacts.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">No matching contacts found.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = contacts.map(c => `
+                <tr>
+                    <td>#${c.id}</td>
+                    <td style="font-weight: 600; color: white;">${escapeHtml(c.contactName)}</td>
+                    <td><span style="background: #0f172a; padding: 4px 8px; border-radius: 6px; color: #34d399; font-family: monospace;">${escapeHtml(c.contactPhone)}</span></td>
+                    <td><span style="color: #60a5fa;">${escapeHtml(c.userEmail)}</span></td>
+                    <td style="color: #94a3b8; font-size: 12px;">${c.createdDate}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderContactsPagination(total, distinctUsers, page, limit) {
+            const bar = document.getElementById('contacts-pagination-bar');
+            if (!bar) return;
+            const totalPages = Math.ceil(total / limit) || 1;
+            const start = (page - 1) * limit + 1;
+            const end = Math.min(page * limit, total);
+
+            bar.innerHTML = `
+                <div>Showing <strong>${start}-${end}</strong> of <strong>${total.toLocaleString()}</strong> contacts (${distinctUsers} unique users)</div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-action" ${page <= 1 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} onclick="loadDashboardContacts(${page - 1})" style="padding: 6px 14px; font-size: 12px;">Prev</button>
+                    <span style="padding: 6px 12px; background: #0f172a; border-radius: 6px; color: white;">Page ${page} of ${totalPages}</span>
+                    <button class="btn-action" ${page >= totalPages ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} onclick="loadDashboardContacts(${page + 1})" style="padding: 6px 14px; font-size: 12px;">Next</button>
+                </div>
+            `;
+        }
+
+        function handleContactsSearchKey(e) {
+            if (e.key === 'Enter') {
+                loadDashboardContacts(1);
+            }
+        }
+
+        function exportContactsCSV() {
+            window.open(`api.php?action=get_admin_contacts&limit=10000&search=${encodeURIComponent(currentContactsSearch)}`, '_blank');
+        }
+
+        // --- APP USERS ENGINE ---
+        function loadDashboardUsers() {
+            const tbody = document.getElementById('users-table-body');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> Loading users...</td></tr>';
+
+            fetch('api.php?action=get_admin_users')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success' && data.data) {
+                        tbody.innerHTML = data.data.map(u => `
+                            <tr>
+                                <td>#${u.userID}</td>
+                                <td style="font-weight: 600; color: white;">${escapeHtml(u.fullName || 'Student')}</td>
+                                <td><span style="color: #60a5fa;">${escapeHtml(u.email)}</span></td>
+                                <td><span style="background: #0f172a; padding: 4px 8px; border-radius: 6px; color: #34d399; font-family: monospace;">${escapeHtml(u.phoneNumber || u.mobile || 'N/A')}</span></td>
+                                <td style="color: #94a3b8; font-size: 12px;">${u.createdDate || '-'}</td>
+                                <td><span style="background: #064e3b; color: #34d399; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">FREE PRO PASS</span></td>
+                                <td><button class="btn-action" style="padding: 4px 10px; font-size: 11px; background: #2563eb;" onclick="alert('User has 100% Free Pro Pass Access!')">Manage</button></td>
+                            </tr>
+                        `).join('');
+                    }
+                });
+        }
+
+        // --- PUSH NOTIFICATIONS ENGINE ---
+        function loadDashboardNotifications() {
+            const tbody = document.getElementById('notifications-table-body');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> Loading notifications...</td></tr>';
+
+            fetch('api.php?action=get_notifications')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success' && data.data) {
+                        tbody.innerHTML = data.data.map(n => `
+                            <tr>
+                                <td>#${n.id}</td>
+                                <td style="font-weight: 600; color: white;">${escapeHtml(n.title)}</td>
+                                <td style="color: #cbd5e1;">${escapeHtml(n.message)}</td>
+                                <td><span style="background: #334155; color: #f59e0b; padding: 4px 8px; border-radius: 6px; font-size: 11px;">${escapeHtml(n.type)}</span></td>
+                                <td style="color: #94a3b8; font-size: 12px;">${n.createdDate}</td>
+                            </tr>
+                        `).join('');
+                    }
+                });
+        }
+
+        function sendDashboardNotification() {
+            const title = document.getElementById('notif-title').value.trim();
+            const message = document.getElementById('notif-message').value.trim();
+            const type = document.getElementById('notif-type').value;
+
+            if (!title || !message) {
+                alert('Please enter both title and message');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('action', 'send_admin_notification');
+            formData.append('title', title);
+            formData.append('message', message);
+            formData.append('type', type);
+
+            fetch('api.php', { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('notif-title').value = '';
+                        document.getElementById('notif-message').value = '';
+                        loadDashboardNotifications();
+                        alert('📢 Notification broadcasted successfully!');
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                });
+        }
+
+        // --- EXAMS MANAGER ENGINE ---
+        function loadDashboardExams() {
+            const tbody = document.getElementById('exams-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = `<tr><td colspan="5" class="loading-state"><i class="fa-solid fa-circle-notch loading-spinner"></i><p>Loading Exam Categories...</p></td></tr>`;
+
+            fetch('api.php?action=get_all_exams')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        currentExamsList = data.data;
+                        renderExamsTable(data.data);
+                        populateExamDropdowns(data.data);
+                    } else {
+                        tbody.innerHTML = `<tr><td colspan="5" style="color: var(--accent-rose); text-align: center; padding: 20px;">Error: ${data.message}</td></tr>`;
+                    }
+                })
+                .catch(err => {
+                    tbody.innerHTML = `<tr><td colspan="5" style="color: var(--accent-rose); text-align: center; padding: 20px;">Failed to load exams: ${err.message}</td></tr>`;
+                });
+        }
+
+        function renderExamsTable(list) {
+            const tbody = document.getElementById('exams-table-body');
+            if (!tbody) return;
+
+            if (!list || list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 30px;">No Exam Categories found. Click <strong>Add New Exam Category</strong> to create one.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            list.forEach(item => {
+                const isVis = item.status == 1;
+                const statusBadge = isVis 
+                    ? `<span class="q-id-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3);"><i class="fa-solid fa-eye"></i> Visible in App</span>`
+                    : `<span class="q-id-badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border-color: rgba(239, 68, 68, 0.3);"><i class="fa-solid fa-eye-slash"></i> Hidden from App</span>`;
+
+                html += `
+                    <tr>
+                        <td><strong>#${item.id}</strong></td>
+                        <td>
+                            <div style="font-weight: 600; color: white;">${escapeHtml(item.name)}</div>
+                        </td>
+                        <td><code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; color: var(--accent-cyan);">${escapeHtml(item.code || '--')}</code></td>
+                        <td><span style="background: rgba(99, 102, 241, 0.15); color: #818cf8; padding: 3px 10px; border-radius: 6px; font-weight: 600;">${item.question_count || 0} Qs</span></td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                <button class="btn-action" onclick="toggleExamStatus(${item.id})" style="padding: 5px 10px; font-size: 11.5px; background: rgba(255, 255, 255, 0.08);">
+                                    <i class="fa-solid ${isVis ? 'fa-eye-slash' : 'fa-eye'}"></i> ${isVis ? 'Hide from App' : 'Show in App'}
+                                </button>
+                                <button class="btn-action" onclick="editExam(${item.id})" style="padding: 5px 10px; font-size: 11.5px; background: rgba(99, 102, 241, 0.2); color: #818cf8; border-color: rgba(99, 102, 241, 0.4);">
+                                    <i class="fa-solid fa-pen"></i> Edit
+                                </button>
+                                <button class="btn-action" onclick="deleteExam(${item.id})" style="padding: 5px 10px; font-size: 11.5px; background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.4);">
+                                    <i class="fa-solid fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        async function toggleExamStatus(id) {
+            try {
+                const res = await fetch('api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'toggle_exam_status', id: id })
+                });
+                const json = await res.json();
+                if (json.status === 'success') {
+                    loadDashboardExams();
+                } else {
+                    alert('Error: ' + json.message);
+                }
+            } catch (err) {
+                alert('Failed to toggle status: ' + err);
+            }
+        }
+
+        function populateExamDropdowns(examsList) {
+            if (!examsList || examsList.length === 0) return;
+            let optionsHtml = '';
+            examsList.forEach(e => {
+                optionsHtml += `<option value="${escapeHtml(e.name)}">${escapeHtml(e.name)}</option>`;
+            });
+
+            ['ts-exam-name', 'edit-exam-category', 'modal-exam-category'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = optionsHtml;
+            });
+        }
+
+        function openCreateExamModal() {
+            document.getElementById('exam-modal-title').innerHTML = '<i class="fa-solid fa-plus-circle" style="color: var(--accent-cyan);"></i> Add New Exam Category';
+            document.getElementById('exam-id').value = '0';
+            document.getElementById('exam-name-input').value = '';
+            document.getElementById('exam-code-input').value = '';
+            document.getElementById('examModal').classList.add('show');
+        }
+
+        function editExam(id) {
+            const item = currentExamsList.find(e => e.id == id);
+            if (!item) return;
+
+            document.getElementById('exam-modal-title').innerHTML = '<i class="fa-solid fa-pen-to-square" style="color: var(--accent-cyan);"></i> Edit Exam Category #' + id;
+            document.getElementById('exam-id').value = item.id;
+            document.getElementById('exam-name-input').value = item.name;
+            document.getElementById('exam-code-input').value = item.code;
+            document.getElementById('examModal').classList.add('show');
+        }
+
+        function closeExamModal() {
+            document.getElementById('examModal').classList.remove('show');
+        }
+
+        async function submitExamForm(e) {
+            e.preventDefault();
+            const id = document.getElementById('exam-id').value;
+            const name = document.getElementById('exam-name-input').value;
+            const code = document.getElementById('exam-code-input').value;
+
+            try {
+                const res = await fetch('api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'save_exam', id: id, name: name, code: code })
+                });
+                const json = await res.json();
+                if (json.status === 'success') {
+                    alert(json.message);
+                    closeExamModal();
+                    loadDashboardExams();
+                } else {
+                    alert('Error: ' + json.message);
+                }
+            } catch (err) {
+                alert('Failed to save exam category: ' + err);
+            }
+        }
+
+        async function deleteExam(id) {
+            if (!confirm(`Are you sure you want to delete Exam Category #${id}?`)) return;
+            try {
+                const res = await fetch('api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'delete_exam', id: id })
+                });
+                const json = await res.json();
+                if (json.status === 'success') {
+                    alert(json.message);
+                    loadDashboardExams();
+                } else {
+                    alert('Error: ' + json.message);
+                }
+            } catch (err) {
+                alert('Failed to delete exam category: ' + err);
+            }
+        }
+
+        function loadDashboardTestSeries() {
+            const tbody = document.getElementById('test-series-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = `<tr><td colspan="7" class="loading-state"><i class="fa-solid fa-circle-notch loading-spinner"></i><p>Loading Test Series...</p></td></tr>`;
+
+            fetch('api.php?action=get_test_series')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        currentTestSeriesList = data.data;
+                        renderTestSeriesTable(data.data);
+                    } else {
+                        tbody.innerHTML = `<tr><td colspan="7" style="color: var(--accent-rose); text-align: center; padding: 20px;">Error: ${data.message}</td></tr>`;
+                    }
+                })
+                .catch(err => {
+                    tbody.innerHTML = `<tr><td colspan="7" style="color: var(--accent-rose); text-align: center; padding: 20px;">Failed to load test series: ${err.message}</td></tr>`;
+                });
+        }
+
+        function renderTestSeriesTable(list) {
+            const tbody = document.getElementById('test-series-table-body');
+            if (!tbody) return;
+
+            if (!list || list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 30px;">No Test Series found. Click <strong>Create New Test Series</strong> to add one.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            list.forEach(item => {
+                const isPub = item.is_published == 1;
+                const statusBadge = isPub 
+                    ? `<span class="q-id-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3);">Published</span>`
+                    : `<span class="q-id-badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">Draft</span>`;
+
+                html += `
+                    <tr>
+                        <td><strong>#${item.id}</strong></td>
+                        <td>
+                            <div style="font-weight: 600; color: white;">${escapeHtml(item.title)}</div>
+                            <div style="font-size: 11px; color: var(--accent-cyan); margin-top: 2px;"><i class="fa-solid fa-graduation-cap"></i> ${escapeHtml(item.exam_name || 'Rajyaseva Prelims')} | QIDs: ${item.question_ids ? escapeHtml(item.question_ids.length > 35 ? item.question_ids.substring(0, 35) + '...' : item.question_ids) : 'Auto / None'}</div>
+                        </td>
+                        <td><strong>₹${item.price}</strong></td>
+                        <td>${item.max_attempts} attempts</td>
+                        <td><span style="background: rgba(99, 102, 241, 0.15); color: #818cf8; padding: 3px 10px; border-radius: 6px; font-weight: 600;">${item.question_count} Qs</span></td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                <button class="btn-action" onclick="editTestSeries(${item.id})" style="padding: 5px 10px; font-size: 11.5px; background: rgba(99, 102, 241, 0.2); color: #818cf8; border-color: rgba(99, 102, 241, 0.4);">
+                                    <i class="fa-solid fa-pen"></i> Edit
+                                </button>
+                                <button class="btn-action" onclick="toggleTestSeriesPublish(${item.id})" style="padding: 5px 10px; font-size: 11.5px; background: rgba(255, 255, 255, 0.08);">
+                                    <i class="fa-solid fa-eye"></i> ${isPub ? 'Unpublish' : 'Publish'}
+                                </button>
+                                <button class="btn-action" onclick="deleteTestSeries(${item.id})" style="padding: 5px 10px; font-size: 11.5px; background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.4);">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function openCreateTestSeriesModal() {
+            loadDashboardExams();
+            document.getElementById('ts-modal-title').innerHTML = '<i class="fa-solid fa-plus-circle" style="color: var(--accent-emerald);"></i> Create New Test Series';
+            document.getElementById('ts-id').value = '0';
+            document.getElementById('ts-title').value = '';
+            document.getElementById('ts-price').value = '0';
+            document.getElementById('ts-max-attempts').value = '10';
+            document.getElementById('ts-question-ids').value = '';
+            document.getElementById('ts-published').value = '1';
+            document.getElementById('testSeriesModal').classList.add('show');
+        }
+
+        function editTestSeries(id) {
+            loadDashboardExams();
+            const item = currentTestSeriesList.find(ts => ts.id == id);
+            if (!item) return;
+
+            document.getElementById('ts-modal-title').innerHTML = '<i class="fa-solid fa-pen-to-square" style="color: var(--primary);"></i> Edit Test Series #' + id;
+            document.getElementById('ts-id').value = item.id;
+            document.getElementById('ts-title').value = item.title;
+            setTimeout(() => {
+                const tsDropdown = document.getElementById('ts-exam-name');
+                if (tsDropdown && item.exam_name) tsDropdown.value = item.exam_name;
+            }, 300);
+            document.getElementById('ts-price').value = item.price;
+            document.getElementById('ts-max-attempts').value = item.max_attempts;
+            document.getElementById('ts-question-ids').value = item.question_ids;
+            document.getElementById('ts-published').value = item.is_published;
+            document.getElementById('testSeriesModal').classList.add('show');
+        }
+
+        function closeTestSeriesModal() {
+            document.getElementById('testSeriesModal').classList.remove('show');
+        }
+
+        function submitTestSeriesForm(e) {
+            e.preventDefault();
+            const id = document.getElementById('ts-id').value;
+            const title = document.getElementById('ts-title').value;
+            const exam_name = document.getElementById('ts-exam-name').value;
+            const price = document.getElementById('ts-price').value;
+            const max_attempts = document.getElementById('ts-max-attempts').value;
+            const question_ids = document.getElementById('ts-question-ids').value;
+            const is_published = document.getElementById('ts-published').value;
+
+            const formData = new FormData();
+            formData.append('action', 'save_test_series');
+            formData.append('id', id);
+            formData.append('title', title);
+            formData.append('exam_name', exam_name);
+            formData.append('price', price);
+            formData.append('max_attempts', max_attempts);
+            formData.append('question_ids', question_ids);
+            formData.append('is_published', is_published);
+
+            fetch('api.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    closeTestSeriesModal();
+                    loadDashboardTestSeries();
+                    alert(data.message);
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(err => alert('Failed to save test series: ' + err.message));
+        }
+
+        function toggleTestSeriesPublish(id) {
+            fetch('api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'toggle_test_series_publish', id: id })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    loadDashboardTestSeries();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(err => alert('Failed to toggle test series status: ' + err));
+        }
+
+        function deleteTestSeries(id) {
+            if (!confirm('Are you sure you want to delete this test series?')) return;
+
+            const formData = new FormData();
+            formData.append('action', 'delete_test_series');
+            formData.append('id', id);
+
+            fetch('api.php', { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        loadDashboardTestSeries();
+                    } else {
+                        alert(data.message);
+                    }
+                });
         }
     </script>
 </body>
