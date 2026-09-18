@@ -1236,7 +1236,26 @@ endif;
                                     <i class="fa-solid fa-globe"></i> Scope: Global (All Subjects)
                                 </span>
                             </div>
-                            <span style="font-size: 11px; color: #64748b;"><i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> Auto-search as you type</span>
+                            <button onclick="resetSearchScope()" style="background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Filters
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- DUAL DROPDOWN FILTER BAR -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+                        <!-- SUBJECT DROPDOWN -->
+                        <div style="flex: 1; min-width: 200px;">
+                            <select id="filter-subject-select" onchange="handleSubjectFilterSelect(this.value)" style="width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 9px 12px; color: #f8fafc; font-size: 12.5px; outline: none; cursor: pointer; font-weight: 500;">
+                                <option value="0">📚 All Subjects (Global Search)</option>
+                            </select>
+                        </div>
+
+                        <!-- TOPIC DROPDOWN -->
+                        <div style="flex: 1; min-width: 200px;">
+                            <select id="filter-topic-select" onchange="handleTopicFilterSelect(this.value)" style="width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 9px 12px; color: #f8fafc; font-size: 12.5px; outline: none; cursor: pointer; font-weight: 500;">
+                                <option value="0">🏷️ All Topics</option>
+                            </select>
                         </div>
                     </div>
 
@@ -1251,7 +1270,7 @@ endif;
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <div class="question-search-box" style="flex: 1; position: relative; width: 100%;">
                             <i class="fa-solid fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 13px;"></i>
-                            <input type="text" id="question-search" class="question-search-input" placeholder="Search Marathi or English words, options, or Question ID..." onkeydown="handleSearchKeyDown(event)" style="width: 100%; background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 10px 38px 10px 38px; color: #f8fafc; font-size: 13px; outline: none;">
+                            <input type="text" id="question-search" class="question-search-input" placeholder="Search Marathi or English words, options, or Question ID..." oninput="handleSearchInput(this)" onkeydown="handleSearchKeyDown(event)" style="width: 100%; background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 10px 38px 10px 38px; color: #f8fafc; font-size: 13px; outline: none;">
                             <button id="btn-clear-search" onclick="clearQuestionSearch()" style="display: none; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 16px;">&times;</button>
                         </div>
                         <button class="btn-action" onclick="triggerManualSearch()" style="background: #2563eb; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; border: none; white-space: nowrap;">
@@ -2085,6 +2104,8 @@ endif;
                 card.appendChild(childrenContainer);
                 container.appendChild(card);
             });
+
+            populateFilterSubjectDropdown();
         }
 
         function renderRecursiveNodes(container, nodes) {
@@ -2119,48 +2140,55 @@ endif;
             });
         }
 
+        function populateFilterSubjectDropdown() {
+            const sel = document.getElementById('filter-subject-select');
+            if (!sel) return;
+            let html = '<option value="0">📚 All Subjects (Global Search)</option>';
+            globalSubjects.forEach(sub => {
+                const name = sub.subjectNameE || sub.subjectNameM;
+                const isSel = (currentSubjectId == sub.subjectID) ? 'selected' : '';
+                html += `<option value="${sub.subjectID}" ${isSel}>${escapeHtml(name)}</option>`;
+            });
+            sel.innerHTML = html;
+        }
+
+        function populateFilterTopicDropdown(subjectId, selectedTopicId = 0) {
+            const sel = document.getElementById('filter-topic-select');
+            if (!sel) return;
+            let html = '<option value="0">🏷️ All Topics</option>';
+            if (subjectId && subjectId > 0) {
+                const sub = globalSubjects.find(s => s.subjectID == subjectId);
+                if (sub && sub.topics) {
+                    sub.topics.forEach(top => {
+                        const isSel = (selectedTopicId == top.topicID) ? 'selected' : '';
+                        html += `<option value="${top.topicID}" ${isSel}>${escapeHtml(top.topicName)}</option>`;
+                    });
+                }
+            }
+            sel.innerHTML = html;
+        }
+
+        function handleSubjectFilterSelect(subId) {
+            subId = parseInt(subId) || 0;
+            if (subId === 0) {
+                resetSearchScope();
+            } else {
+                const sub = globalSubjects.find(s => s.subjectID == subId);
+                const name = sub ? (sub.subjectNameE || sub.subjectNameM) : 'Subject';
+                selectSubject(subId, name);
+            }
+        }
+
+        function handleTopicFilterSelect(topicId) {
+            topicId = parseInt(topicId) || 0;
+            selectTopic(topicId);
+        }
+
         function toggleTreeBranch(subId, e) {
             if (e) e.stopPropagation();
-            const branch = document.getElementById(`branch-${subId}`);
-            const arrow = document.getElementById(`arrow-${subId}`);
-            if (branch) {
-                branch.classList.toggle('open');
-                if (arrow) arrow.classList.toggle('open');
-            }
-        }
-
-        function toggleSubNode(topicId, e) {
-            if (e) e.stopPropagation();
-            const branch = document.getElementById(`branch-node-${topicId}`);
-            if (branch) {
-                branch.classList.toggle('open');
-            }
-        }
-
-        // Single Subject Sync
-        async function syncSingleSubject(subId, btnElem) {
-            const origHtml = btnElem.innerHTML;
-            btnElem.disabled = true;
-            btnElem.innerHTML = `<i class="fa-solid fa-rotate fa-spin"></i> Syncing...`;
-
-            try {
-                const res = await fetch(`api.php?action=sync_subject&subject_id=${subId}`);
-                const json = await res.json();
-                if (json.status === 'success') {
-                    alert(json.message);
-                    fetchStats();
-                    fetchSubjectsAndBuildTree();
-                    if (currentSubjectId === subId) {
-                        fetchQuestions();
-                    }
-                } else {
-                    alert("Sync Error: " + json.message);
-                }
-            } catch (err) {
-                alert("Failed to sync subject. Please check server.");
-            } finally {
-                btnElem.disabled = false;
-                btnElem.innerHTML = origHtml;
+            const body = document.getElementById(`sub-body-${subId}`);
+            if (body) {
+                body.classList.toggle('open');
             }
         }
 
@@ -2193,6 +2221,11 @@ endif;
             document.querySelectorAll('.tree-subject-header').forEach(h => h.classList.remove('active'));
             document.querySelectorAll('.tree-topic-item').forEach(i => i.classList.remove('active'));
             document.getElementById('current-subject-title').innerText = 'All Subjects';
+            
+            const subSel = document.getElementById('filter-subject-select');
+            if (subSel) subSel.value = '0';
+            populateFilterTopicDropdown(0, 0);
+
             updateSearchPlaceholder();
             fetchQuestions();
         }

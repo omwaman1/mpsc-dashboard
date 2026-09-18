@@ -1,2 +1,28 @@
+# Embedded Sub-repositories
+mpscpracticeweb/
+mpsc abhyas/
+
+# Telegram Credentials & Userbot State (CRITICAL SENSITIVE DATA)
+*.session
+*.session-journal
+activity.log
+contacted_users.json
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+
+# Dependencies & Binaries
+node_modules/
+**/node_modules/
+*.exe
+
+# Local Secrets & Overrides
+config.local.php
+*.local.php
+.env
+
+# Logs & OS
 *.log
 .DS_Store
+Thumbs.db

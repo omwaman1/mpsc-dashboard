@@ -1,0 +1,8 @@
+# Protect the locations.json file from direct browser access
+<Files "locations.json">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Prevent directory listing
+Options -Indexes

@@ -1,0 +1,350 @@
+{
+  "getGoalGroups_notes": [
+    {
+      "id": "63bff4295d5b4b3e1b8ee6b8"
+    }
+  ],
+  "getGoalGroups_practice": [
+    {
+      "id": "63bff4295d5b4b3e1b8ee6b8"
+    }
+  ],
+  "getGoalSubjects_notes": {
+    "notes": {
+      "subjects": [
+        {
+          "id": "653124de9b30f78cb1d699d4",
+          "title": "General Science",
+          "meta": {
+            "questionCount": 0,
+            "noteCount": 41
+          },
+          "logo": ""
+        },
+        {
+          "id": "65312509ee03f6f03f084208",
+          "title": "Science & Technology",
+          "meta": {
+            "questionCount": 0,
+            "noteCount": 19
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff477622812c5fd72f096",
+          "title": "History",
+          "meta": {
+            "questionCount": 425,
+            "noteCount": 33
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff49c543b5b9e9f896324",
+          "title": "Geography",
+          "meta": {
+            "questionCount": 250,
+            "noteCount": 30
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff53e622812c5fd730903",
+          "title": "Polity",
+          "meta": {
+            "questionCount": 395,
+            "noteCount": 49
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff5171b9259e6d00b0cab",
+          "title": "Economics",
+          "meta": {
+            "questionCount": 230,
+            "noteCount": 38
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff4ee622812c5fd72ff9b",
+          "title": "Agriculture",
+          "meta": {
+            "questionCount": 0,
+            "noteCount": 6
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff5d5543b5b9e9f8986db",
+          "title": "Marathi",
+          "meta": {
+            "questionCount": 130,
+            "noteCount": 13
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff59122bb1ff21b566cea",
+          "title": "English",
+          "meta": {
+            "questionCount": 0,
+            "noteCount": 11
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff5b7658d9dc9871de77b",
+          "title": "General Mental Ability",
+          "meta": {
+            "questionCount": 320,
+            "noteCount": 15
+          },
+          "logo": ""
+        }
+      ],
+      "skip": 0,
+      "limit": 16,
+      "noMoreResults": true
+    },
+    "practice": {
+      "subjects": [
+        {
+          "id": "63bff477622812c5fd72f096",
+          "title": "History",
+          "meta": {
+            "questionCount": 425,
+            "noteCount": 33
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff49c543b5b9e9f896324",
+          "title": "Geography",
+          "meta": {
+            "questionCount": 250,
+            "noteCount": 30
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff53e622812c5fd730903",
+          "title": "Polity",
+          "meta": {
+            "questionCount": 395,
+            "noteCount": 49
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff5171b9259e6d00b0cab",
+          "title": "Economics",
+          "meta": {
+            "questionCount": 230,
+            "noteCount": 38
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff56422bb1ff21b56695b",
+          "title": "Science & Technology (Practice Questions)",
+          "meta": {
+            "questionCount": 420,
+            "noteCount": 0
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff5d5543b5b9e9f8986db",
+          "title": "Marathi",
+          "meta": {
+            "questionCount": 130,
+            "noteCount": 13
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff5b7658d9dc9871de77b",
+          "title": "General Mental Ability",
+          "meta": {
+            "questionCount": 320,
+            "noteCount": 15
+          },
+          "logo": ""
+        }
+      ],
+      "skip": 0,
+      "limit": 16,
+      "noMoreResults": true
+    }
+  },
+  "getGoalSubjects_practice": {
+    "notes": {
+      "subjects": [
+        {
+          "id": "653124de9b30f78cb1d699d4",
+          "title": "General Science",
+          "meta": {
+            "questionCount": 0,
+            "noteCount": 41
+          },
+          "logo": ""
+        },
+        {
+          "id": "65312509ee03f6f03f084208",
+          "title": "Science & Technology",
+          "meta": {
+            "questionCount": 0,
+            "noteCount": 19
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff477622812c5fd72f096",
+          "title": "History",
+          "meta": {
+            "questionCount": 425,
+            "noteCount": 33
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff49c543b5b9e9f896324",
+          "title": "Geography",
+          "meta": {
+            "questionCount": 250,
+            "noteCount": 30
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff53e622812c5fd730903",
+          "title": "Polity",
+          "meta": {
+            "questionCount": 395,
+            "noteCount": 49
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff5171b9259e6d00b0cab",
+          "title": "Economics",
+          "meta": {
+            "questionCount": 230,
+            "noteCount": 38
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff4ee622812c5fd72ff9b",
+          "title": "Agriculture",
+          "meta": {
+            "questionCount": 0,
+            "noteCount": 6
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff5d5543b5b9e9f8986db",
+          "title": "Marathi",
+          "meta": {
+            "questionCount": 130,
+            "noteCount": 13
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff59122bb1ff21b566cea",
+          "title": "English",
+          "meta": {
+            "questionCount": 0,
+            "noteCount": 11
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff5b7658d9dc9871de77b",
+          "title": "General Mental Ability",
+          "meta": {
+            "questionCount": 320,
+            "noteCount": 15
+          },
+          "logo": ""
+        }
+      ],
+      "skip": 0,
+      "limit": 16,
+      "noMoreResults": true
+    },
+    "practice": {
+      "subjects": [
+        {
+          "id": "63bff477622812c5fd72f096",
+          "title": "History",
+          "meta": {
+            "questionCount": 425,
+            "noteCount": 33
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff49c543b5b9e9f896324",
+          "title": "Geography",
+          "meta": {
+            "questionCount": 250,
+            "noteCount": 30
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff53e622812c5fd730903",
+          "title": "Polity",
+          "meta": {
+            "questionCount": 395,
+            "noteCount": 49
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff5171b9259e6d00b0cab",
+          "title": "Economics",
+          "meta": {
+            "questionCount": 230,
+            "noteCount": 38
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff56422bb1ff21b56695b",
+          "title": "Science & Technology (Practice Questions)",
+          "meta": {
+            "questionCount": 420,
+            "noteCount": 0
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff5d5543b5b9e9f8986db",
+          "title": "Marathi",
+          "meta": {
+            "questionCount": 130,
+            "noteCount": 13
+          },
+          "logo": ""
+        },
+        {
+          "id": "63bff5b7658d9dc9871de77b",
+          "title": "General Mental Ability",
+          "meta": {
+            "questionCount": 320,
+            "noteCount": 15
+          },
+          "logo": ""
+        }
+      ],
+      "skip": 0,
+      "limit": 16,
+      "noMoreResults": true
+    }
+  }
+}

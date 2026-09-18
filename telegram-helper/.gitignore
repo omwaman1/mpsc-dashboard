@@ -1,0 +1,16 @@
+# Sensitive Telegram credentials & session tokens
+*.session
+*.session-journal
+
+# Logs & tracking state
+*.log
+activity.log
+contacted_users.json
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Local environment
+.env
+config_local.py

